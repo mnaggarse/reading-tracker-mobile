@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -18,8 +20,37 @@ export default function AddBookScreen() {
   const [title, setTitle] = useState("");
   const [cover, setCover] = useState("");
   const [totalPages, setTotalPages] = useState("");
-  const [status, setStatus] = useState<"reading" | "to-read">("to-read");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const pickImage = async () => {
+    try {
+      // Request permission
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission needed",
+          "Please grant permission to access your photo library"
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [3, 4], // Book cover aspect ratio
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setCover(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Failed to pick image. Please try again.");
+    }
+  };
 
   const handleSubmit = () => {
     if (!title.trim()) {
@@ -37,7 +68,7 @@ export default function AddBookScreen() {
     }
 
     if (!cover.trim()) {
-      Alert.alert("Error", "Please enter a cover image URL");
+      Alert.alert("Error", "Please select a cover image");
       return;
     }
 
@@ -48,8 +79,8 @@ export default function AddBookScreen() {
         title: title.trim(),
         cover: cover.trim(),
         totalPages: Number(totalPages),
-        pagesRead: status === "reading" ? 1 : 0,
-        status,
+        pagesRead: 0,
+        status: "to-read", // Default to "to read" status
       });
 
       Alert.alert("Success", "Book added successfully!", [
@@ -60,7 +91,6 @@ export default function AddBookScreen() {
             setTitle("");
             setCover("");
             setTotalPages("");
-            setStatus("to-read");
             // Navigate back to library
             router.push("/");
           },
@@ -81,11 +111,26 @@ export default function AddBookScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.header}>
-          <Ionicons name="add-circle" size={48} color="#2196F3" />
-          <Text style={styles.headerTitle}>Add New Book</Text>
-          <Text style={styles.headerSubtitle}>
-            Enter the details of your new book
-          </Text>
+          <Text style={styles.headerTitle}>Add Book</Text>
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Cover Image *</Text>
+          <TouchableOpacity
+            style={styles.imagePickerButton}
+            onPress={pickImage}
+          >
+            {cover ? (
+              <Image source={{ uri: cover }} style={styles.selectedImage} />
+            ) : (
+              <View style={styles.imagePlaceholder}>
+                <Ionicons name="camera" size={32} color="#666666" />
+                <Text style={styles.imagePlaceholderText}>
+                  Select Cover Image
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         <View style={styles.form}>
@@ -101,18 +146,6 @@ export default function AddBookScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cover Image URL *</Text>
-            <TextInput
-              style={styles.input}
-              value={cover}
-              onChangeText={setCover}
-              placeholder="Enter cover image URL"
-              placeholderTextColor="#999999"
-              autoCapitalize="none"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
             <Text style={styles.label}>Total Pages *</Text>
             <TextInput
               style={styles.input}
@@ -122,55 +155,6 @@ export default function AddBookScreen() {
               placeholderTextColor="#999999"
               keyboardType="numeric"
             />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Status</Text>
-            <View style={styles.statusContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.statusButton,
-                  status === "to-read" && styles.statusButtonActive,
-                ]}
-                onPress={() => setStatus("to-read")}
-              >
-                <Ionicons
-                  name="bookmark-outline"
-                  size={20}
-                  color={status === "to-read" ? "#FFFFFF" : "#666666"}
-                />
-                <Text
-                  style={[
-                    styles.statusButtonText,
-                    status === "to-read" && styles.statusButtonTextActive,
-                  ]}
-                >
-                  To Read
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.statusButton,
-                  status === "reading" && styles.statusButtonActive,
-                ]}
-                onPress={() => setStatus("reading")}
-              >
-                <Ionicons
-                  name="play-outline"
-                  size={20}
-                  color={status === "reading" ? "#FFFFFF" : "#666666"}
-                />
-                <Text
-                  style={[
-                    styles.statusButtonText,
-                    status === "reading" && styles.statusButtonTextActive,
-                  ]}
-                >
-                  Start Reading
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
 
           <TouchableOpacity
@@ -199,6 +183,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     padding: 16,
+    paddingTop: 66, // Add top padding for status bar
   },
   header: {
     alignItems: "center",
@@ -209,12 +194,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333333",
     marginTop: 8,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: "#666666",
-    marginTop: 4,
-    textAlign: "center",
   },
   form: {
     flex: 1,
@@ -236,33 +215,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E0E0E0",
   },
-  statusContainer: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  statusButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 12,
+  imagePickerButton: {
+    backgroundColor: "#FFFFFF",
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#E0E0E0",
-    backgroundColor: "#FFFFFF",
-    gap: 8,
+    overflow: "hidden",
   },
-  statusButtonActive: {
-    backgroundColor: "#2196F3",
-    borderColor: "#2196F3",
+  selectedImage: {
+    width: "100%",
+    height: 200,
+    resizeMode: "cover",
   },
-  statusButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
+  imagePlaceholder: {
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8F9FA",
+  },
+  imagePlaceholderText: {
+    fontSize: 16,
     color: "#666666",
-  },
-  statusButtonTextActive: {
-    color: "#FFFFFF",
+    marginTop: 8,
   },
   submitButton: {
     backgroundColor: "#2196F3",

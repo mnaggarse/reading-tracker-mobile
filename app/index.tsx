@@ -2,20 +2,24 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Modal,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import BookCard from "../components/BookCard";
 import { Book, database } from "../lib/database";
-import { addSampleData } from "../lib/sampleData";
 
 export default function LibraryScreen() {
   const [books, setBooks] = useState<Book[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [progressModalVisible, setProgressModalVisible] = useState(false);
+  const [newPagesRead, setNewPagesRead] = useState("");
 
   const loadBooks = () => {
     try {
@@ -37,30 +41,45 @@ export default function LibraryScreen() {
     setRefreshing(false);
   };
 
-  const handleAddSampleData = () => {
-    try {
-      addSampleData();
-      loadBooks();
-      Alert.alert("Success", "Sample books added successfully!");
-    } catch (error) {
-      console.error("Error adding sample data:", error);
-      Alert.alert("Error", "Failed to add sample data");
-    }
-  };
-
   const handleBookPress = (book: Book) => {
-    Alert.alert("Update Progress", `Update pages read for "${book.title}"`, [
-      { text: "Cancel", style: "cancel" },
-      { text: "Update", onPress: () => updateBookProgress(book) },
-    ]);
+    setSelectedBook(book);
+    setNewPagesRead(book.pagesRead.toString());
+    setProgressModalVisible(true);
   };
 
-  const updateBookProgress = (book: Book) => {
-    // This would typically open a modal or navigate to an edit screen
-    Alert.alert(
-      "Coming Soon",
-      "Progress update feature will be implemented soon!"
-    );
+  const updateBookProgress = () => {
+    if (!selectedBook) return;
+
+    const pagesRead = parseInt(newPagesRead);
+    if (
+      isNaN(pagesRead) ||
+      pagesRead < 0 ||
+      pagesRead > selectedBook.totalPages
+    ) {
+      Alert.alert("Error", "Please enter a valid number of pages");
+      return;
+    }
+
+    try {
+      let newStatus = selectedBook.status;
+      if (pagesRead === 0) {
+        newStatus = "to-read";
+      } else if (pagesRead === selectedBook.totalPages) {
+        newStatus = "completed";
+      } else {
+        newStatus = "reading";
+      }
+
+      database.updateBookProgress(selectedBook.id!, pagesRead, newStatus);
+      loadBooks();
+      setProgressModalVisible(false);
+      setSelectedBook(null);
+      setNewPagesRead("");
+      Alert.alert("Success", "Progress updated successfully!");
+    } catch (error) {
+      console.error("Error updating progress:", error);
+      Alert.alert("Error", "Failed to update progress");
+    }
   };
 
   const handleBookLongPress = (book: Book) => {
@@ -121,44 +140,84 @@ export default function LibraryScreen() {
   );
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {books.length === 0 && (
-        <View style={styles.sampleDataContainer}>
-          <Text style={styles.sampleDataText}>
-            No books yet. Add some sample books to get started!
-          </Text>
-          <TouchableOpacity
-            style={styles.sampleDataButton}
-            onPress={handleAddSampleData}
-          >
-            <Text style={styles.sampleDataButtonText}>Add Sample Books</Text>
-          </TouchableOpacity>
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {renderBookSection(
+          "Currently Reading",
+          getBooksByStatus("reading"),
+          "No books currently being read"
+        )}
+
+        {renderBookSection(
+          "To Read",
+          getBooksByStatus("to-read"),
+          "No books in your reading list"
+        )}
+
+        {renderBookSection(
+          "Completed",
+          getBooksByStatus("completed"),
+          "No completed books yet"
+        )}
+      </ScrollView>
+
+      {/* Progress Update Modal */}
+      <Modal
+        visible={progressModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setProgressModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              Update Progress - {selectedBook?.title}
+            </Text>
+            <Text style={styles.modalSubtitle}>
+              Pages read: {selectedBook?.pagesRead} / {selectedBook?.totalPages}
+            </Text>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Pages Read:</Text>
+              <TextInput
+                style={styles.modalInput}
+                value={newPagesRead}
+                onChangeText={setNewPagesRead}
+                keyboardType="numeric"
+                placeholder="Enter pages read"
+                placeholderTextColor="#999999"
+              />
+            </View>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => {
+                  setProgressModalVisible(false);
+                  setSelectedBook(null);
+                  setNewPagesRead("");
+                }}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.updateButton}
+                onPress={updateBookProgress}
+              >
+                <Text style={styles.updateButtonText}>Update</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      )}
-
-      {renderBookSection(
-        "Currently Reading",
-        getBooksByStatus("reading"),
-        "No books currently being read"
-      )}
-
-      {renderBookSection(
-        "To Read",
-        getBooksByStatus("to-read"),
-        "No books in your reading list"
-      )}
-
-      {renderBookSection(
-        "Completed",
-        getBooksByStatus("completed"),
-        "No completed books yet"
-      )}
-    </ScrollView>
+      </Modal>
+    </>
   );
 }
 
@@ -167,28 +226,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F9FA",
   },
-  sampleDataContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 40,
-    marginHorizontal: 16,
-  },
-  sampleDataText: {
-    fontSize: 16,
-    color: "#666666",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  sampleDataButton: {
-    backgroundColor: "#2196F3",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  sampleDataButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+  contentContainer: {
+    paddingTop: 50, // Add top padding for status bar
   },
   section: {
     marginVertical: 16,
@@ -214,5 +253,78 @@ const styles = StyleSheet.create({
     color: "#999999",
     marginTop: 8,
     textAlign: "center",
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 20,
+    margin: 20,
+    width: "90%",
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333333",
+    marginBottom: 8,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: "#666666",
+    marginBottom: 20,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333333",
+    marginBottom: 8,
+  },
+  modalInput: {
+    backgroundColor: "#F8F9FA",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666666",
+  },
+  updateButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: "#2196F3",
+    alignItems: "center",
+  },
+  updateButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
 });

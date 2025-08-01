@@ -15,12 +15,7 @@ export default function RootLayout() {
           paddingTop: 5,
           height: 60,
         },
-        headerStyle: {
-          backgroundColor: "#FFFFFF",
-        },
-        headerTitleStyle: {
-          fontWeight: "600",
-        },
+        headerShown: false, // Hide all page headers
       }}
     >
       <Tabs.Screen

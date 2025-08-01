@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 16,
-    marginHorizontal: 8,
     marginVertical: 6,
     shadowColor: "#000",
     shadowOffset: {
@@ -47,7 +46,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
-    flex: 1,
+    width: "48%", // Make cards take up roughly half the width for 2x2 grid
     minHeight: 100,
   },
   header: {
@@ -60,6 +59,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#666666",
+    flex: 1,
   },
   iconContainer: {
     width: 24,
