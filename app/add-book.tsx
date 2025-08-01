@@ -83,16 +83,20 @@ export default function AddBookScreen() {
         status: "to-read", // Default to "to read" status
       });
 
+      // Reset form
+      setTitle("");
+      setCover("");
+      setTotalPages("");
+
       Alert.alert("Success", "Book added successfully!", [
         {
           text: "OK",
           onPress: () => {
-            // Reset form
-            setTitle("");
-            setCover("");
-            setTotalPages("");
-            // Navigate back to library
-            router.push("/");
+            // Navigate back to library with refresh parameter
+            router.push({
+              pathname: "/",
+              params: { refresh: Date.now() },
+            });
           },
         },
       ]);
@@ -114,25 +118,6 @@ export default function AddBookScreen() {
           <Text style={styles.headerTitle}>Add Book</Text>
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Cover Image *</Text>
-          <TouchableOpacity
-            style={styles.imagePickerButton}
-            onPress={pickImage}
-          >
-            {cover ? (
-              <Image source={{ uri: cover }} style={styles.selectedImage} />
-            ) : (
-              <View style={styles.imagePlaceholder}>
-                <Ionicons name="camera" size={32} color="#666666" />
-                <Text style={styles.imagePlaceholderText}>
-                  Select Cover Image
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-
         <View style={styles.form}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Book Title *</Text>
@@ -143,6 +128,25 @@ export default function AddBookScreen() {
               placeholder="Enter book title"
               placeholderTextColor="#999999"
             />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Cover Image *</Text>
+            <TouchableOpacity
+              style={styles.imagePickerButton}
+              onPress={pickImage}
+            >
+              {cover ? (
+                <Image source={{ uri: cover }} style={styles.selectedImage} />
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <Ionicons name="camera" size={32} color="#666666" />
+                  <Text style={styles.imagePlaceholderText}>
+                    Select Cover Image
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.inputGroup}>

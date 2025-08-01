@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 12,
-    marginHorizontal: 8,
     marginVertical: 6,
     shadowColor: "#000",
     shadowOffset: {
@@ -83,7 +82,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
-    width: 160,
+    width: "47%", // Two books per row with proper spacing
   },
   coverContainer: {
     position: "relative",

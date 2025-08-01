@@ -1,3 +1,4 @@
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -28,6 +29,7 @@ export default function ProfileScreen() {
     totalPagesGoal: 0,
   });
   const [refreshing, setRefreshing] = useState(false);
+  const params = useLocalSearchParams();
 
   const loadStatistics = () => {
     try {
@@ -42,6 +44,20 @@ export default function ProfileScreen() {
   useEffect(() => {
     loadStatistics();
   }, []);
+
+  // Listen for navigation parameters to trigger refresh
+  useEffect(() => {
+    if (params.refresh) {
+      loadStatistics();
+    }
+  }, [params.refresh]);
+
+  // Update statistics when profile page comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      loadStatistics();
+    }, [])
+  );
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -61,8 +77,22 @@ export default function ProfileScreen() {
           onPress: () => {
             try {
               database.resetData();
+
+              // Update statistics immediately
               loadStatistics();
-              Alert.alert("Success", "All data has been reset");
+
+              Alert.alert("Success", "All data has been reset", [
+                {
+                  text: "OK",
+                  onPress: () => {
+                    // Navigate back to library with refresh parameter
+                    router.push({
+                      pathname: "/",
+                      params: { refresh: Date.now() },
+                    });
+                  },
+                },
+              ]);
             } catch (error) {
               console.error("Error resetting data:", error);
               Alert.alert("Error", "Failed to reset data");

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -20,6 +21,8 @@ export default function LibraryScreen() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [progressModalVisible, setProgressModalVisible] = useState(false);
   const [newPagesRead, setNewPagesRead] = useState("");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const params = useLocalSearchParams();
 
   const loadBooks = () => {
     try {
@@ -33,7 +36,14 @@ export default function LibraryScreen() {
 
   useEffect(() => {
     loadBooks();
-  }, []);
+  }, [refreshTrigger]);
+
+  // Listen for navigation parameters to trigger refresh
+  useEffect(() => {
+    if (params.refresh) {
+      loadBooks();
+    }
+  }, [params.refresh]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -71,11 +81,25 @@ export default function LibraryScreen() {
       }
 
       database.updateBookProgress(selectedBook.id!, pagesRead, newStatus);
-      loadBooks();
       setProgressModalVisible(false);
       setSelectedBook(null);
       setNewPagesRead("");
-      Alert.alert("Success", "Progress updated successfully!");
+
+      // Force immediate refresh
+      setRefreshTrigger((prev) => prev + 1);
+
+      Alert.alert("Success", "Progress updated successfully!", [
+        {
+          text: "OK",
+          onPress: () => {
+            // Navigate back to library with refresh parameter
+            router.push({
+              pathname: "/",
+              params: { refresh: Date.now() },
+            });
+          },
+        },
+      ]);
     } catch (error) {
       console.error("Error updating progress:", error);
       Alert.alert("Error", "Failed to update progress");
@@ -96,8 +120,22 @@ export default function LibraryScreen() {
   const deleteBook = (id: number) => {
     try {
       database.deleteBook(id);
-      loadBooks();
-      Alert.alert("Success", "Book deleted successfully");
+
+      // Force immediate refresh
+      setRefreshTrigger((prev) => prev + 1);
+
+      Alert.alert("Success", "Book deleted successfully", [
+        {
+          text: "OK",
+          onPress: () => {
+            // Navigate back to library with refresh parameter
+            router.push({
+              pathname: "/",
+              params: { refresh: Date.now() },
+            });
+          },
+        },
+      ]);
     } catch (error) {
       console.error("Error deleting book:", error);
       Alert.alert("Error", "Failed to delete book");
@@ -116,11 +154,7 @@ export default function LibraryScreen() {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
       {books.length > 0 ? (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.bookList}
-        >
+        <View style={styles.bookGrid}>
           {books.map((book) => (
             <BookCard
               key={book.id}
@@ -129,7 +163,7 @@ export default function LibraryScreen() {
               onLongPress={() => handleBookLongPress(book)}
             />
           ))}
-        </ScrollView>
+        </View>
       ) : (
         <View style={styles.emptyContainer}>
           <Ionicons name="book-outline" size={48} color="#CCCCCC" />
@@ -239,8 +273,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 12,
   },
-  bookList: {
-    paddingHorizontal: 8,
+  bookGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingHorizontal: 16,
+    justifyContent: "space-between",
   },
   emptyContainer: {
     alignItems: "center",
