@@ -13,7 +13,7 @@ export default function ProgressBar({
   label,
   current,
   total,
-  color = "#2196F3",
+  color = "#3B82F6",
   showPercentage = true,
 }: ProgressBarProps) {
   const percentage = total > 0 ? (current / total) * 100 : 0;

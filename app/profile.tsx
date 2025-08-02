@@ -187,7 +187,7 @@ export default function ProfileScreen() {
             label="Books Completed"
             current={stats.completedBooks}
             total={stats.totalBooks}
-            color="#2196F3"
+            color="#3B82F6"
           />
 
           <ProgressBar
@@ -231,9 +231,9 @@ export default function ProfileScreen() {
 
         <View style={styles.actionsCard}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Account Actions</Text>
+            <Text style={styles.cardTitle}>Danger Zone</Text>
             <Text style={styles.cardSubtitle}>
-              Manage your account and data
+              Delete all your books and progress
             </Text>
           </View>
 
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   exportButton: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#3B82F6",
   },
   importButton: {
     backgroundColor: "#4CAF50",

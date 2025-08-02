@@ -207,12 +207,13 @@ export default function LibraryScreen() {
         transparent={true}
         animationType="fade"
         onRequestClose={() => setProgressModalVisible(false)}
+        statusBarTranslucent={true}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <View style={styles.modalIconContainer}>
-                <Ionicons name="book-outline" size={32} color="#2196F3" />
+                <Ionicons name="book-outline" size={32} color="#3B82F6" />
               </View>
               <Text style={styles.modalTitle}>Update Progress</Text>
               <Text style={styles.modalBookTitle}>{selectedBook?.title}</Text>
@@ -356,7 +357,11 @@ const styles = StyleSheet.create({
   },
   // Modal styles
   modalOverlay: {
-    flex: 1,
+    position: "absolute",
+    top: -50, // Extend beyond status bar
+    left: 0,
+    right: 0,
+    bottom: -50, // Extend beyond navigation bar
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
@@ -467,7 +472,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     borderRadius: 8,
-    backgroundColor: "#2196F3",
+    backgroundColor: "#3B82F6",
     alignItems: "center",
   },
   updateButtonText: {

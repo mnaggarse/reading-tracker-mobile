@@ -49,9 +49,9 @@ export default function ConfirmModal({
         };
       default:
         return {
-          iconColor: "#2196F3",
-          confirmButtonColor: "#2196F3",
-          iconBackground: "#E3F2FD",
+          iconColor: "#3B82F6",
+          confirmButtonColor: "#3B82F6",
+          iconBackground: "#EFF6FF",
         };
     }
   };

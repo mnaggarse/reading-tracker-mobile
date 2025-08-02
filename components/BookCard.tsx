@@ -18,7 +18,7 @@ export default function BookCard({
 
   const getProgressColor = () => {
     if (book.status === "completed") return "#4CAF50";
-    if (book.status === "reading") return "#2196F3";
+    if (book.status === "reading") return "#3B82F6";
     return "#E0E0E0";
   };
 
