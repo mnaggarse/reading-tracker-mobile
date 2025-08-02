@@ -1,3 +1,4 @@
+import * as FileSystem from "expo-file-system";
 import * as SQLite from "expo-sqlite";
 
 export interface Book {
@@ -9,6 +10,12 @@ export interface Book {
   status: "reading" | "completed" | "to-read";
   createdAt: string;
   updatedAt: string;
+}
+
+interface DatabaseValidationResult {
+  isValid: boolean;
+  error?: string;
+  books?: Book[];
 }
 
 class DatabaseService {
@@ -128,6 +135,150 @@ class DatabaseService {
   // Reset all data
   resetData(): void {
     this.db.runSync("DELETE FROM books");
+  }
+
+  // Export database to JSON
+  async exportData(): Promise<string> {
+    try {
+      const books = this.getBooks();
+      const statistics = this.getStatistics();
+
+      const exportData = {
+        version: "1.0",
+        exportedAt: new Date().toISOString(),
+        books,
+        statistics,
+      };
+
+      const jsonString = JSON.stringify(exportData, null, 2);
+      const fileName = `reading-tracker-export-${
+        new Date().toISOString().split("T")[0]
+      }.json`;
+      const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+
+      await FileSystem.writeAsStringAsync(fileUri, jsonString);
+      return fileUri;
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      throw new Error("Failed to export data");
+    }
+  }
+
+  // Validate imported database file
+  validateImportFile(jsonData: string): DatabaseValidationResult {
+    try {
+      const data = JSON.parse(jsonData);
+
+      // Check if it's a valid export file
+      if (!data.version || !data.books || !Array.isArray(data.books)) {
+        return {
+          isValid: false,
+          error:
+            "Invalid file format. Please select a valid reading tracker export file.",
+        };
+      }
+
+      // Validate each book
+      const validBooks: Book[] = [];
+      for (const book of data.books) {
+        // Check required fields
+        if (!book.title || typeof book.title !== "string") {
+          return {
+            isValid: false,
+            error: "Invalid book data: missing or invalid title",
+          };
+        }
+
+        if (!book.cover || typeof book.cover !== "string") {
+          return {
+            isValid: false,
+            error: "Invalid book data: missing or invalid cover URL",
+          };
+        }
+
+        if (
+          !book.totalPages ||
+          typeof book.totalPages !== "number" ||
+          book.totalPages <= 0
+        ) {
+          return {
+            isValid: false,
+            error: "Invalid book data: missing or invalid total pages",
+          };
+        }
+
+        if (
+          typeof book.pagesRead !== "number" ||
+          book.pagesRead < 0 ||
+          book.pagesRead > book.totalPages
+        ) {
+          return {
+            isValid: false,
+            error: "Invalid book data: invalid pages read count",
+          };
+        }
+
+        if (
+          !book.status ||
+          !["reading", "completed", "to-read"].includes(book.status)
+        ) {
+          return {
+            isValid: false,
+            error: "Invalid book data: invalid status",
+          };
+        }
+
+        if (!book.createdAt || !book.updatedAt) {
+          return {
+            isValid: false,
+            error: "Invalid book data: missing timestamps",
+          };
+        }
+
+        // Add to valid books
+        validBooks.push(book);
+      }
+
+      return {
+        isValid: true,
+        books: validBooks,
+      };
+    } catch (error) {
+      return {
+        isValid: false,
+        error: "Invalid JSON format. Please select a valid export file.",
+      };
+    }
+  }
+
+  // Import data from JSON
+  async importData(jsonData: string): Promise<void> {
+    const validation = this.validateImportFile(jsonData);
+
+    if (!validation.isValid) {
+      throw new Error(validation.error);
+    }
+
+    try {
+      // Clear existing data
+      this.resetData();
+
+      // Import new data
+      if (validation.books && validation.books.length > 0) {
+        for (const book of validation.books) {
+          this.addBook({
+            title: book.title,
+            cover: book.cover,
+            totalPages: book.totalPages,
+            pagesRead: book.pagesRead,
+            status: book.status,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error importing data:", error);
+      throw new Error("Failed to import data");
+    }
   }
 }
 

@@ -1,4 +1,7 @@
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import * as Sharing from "expo-sharing";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -29,6 +32,8 @@ export default function ProfileScreen() {
     totalPagesGoal: 0,
   });
   const [refreshing, setRefreshing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const params = useLocalSearchParams();
 
   const loadStatistics = () => {
@@ -63,6 +68,95 @@ export default function ProfileScreen() {
     setRefreshing(true);
     loadStatistics();
     setRefreshing(false);
+  };
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      const fileUri = await database.exportData();
+
+      // Check if sharing is available
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: "application/json",
+          dialogTitle: "Export Reading Data",
+        });
+      } else {
+        Alert.alert(
+          "Export Complete",
+          `Data exported successfully to: ${fileUri}`,
+          [{ text: "OK" }]
+        );
+      }
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      Alert.alert("Error", "Failed to export data. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImportData = async () => {
+    Alert.alert(
+      "Import Data",
+      "This will replace all your current reading data. Are you sure you want to continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Import",
+          onPress: async () => {
+            setIsImporting(true);
+            try {
+              // Pick document
+              const result = await DocumentPicker.getDocumentAsync({
+                type: "application/json",
+                copyToCacheDirectory: true,
+              });
+
+              if (result.canceled || !result.assets[0]) {
+                setIsImporting(false);
+                return;
+              }
+
+              const fileUri = result.assets[0].uri;
+
+              // Read file content
+              const fileContent = await FileSystem.readAsStringAsync(fileUri);
+
+              // Import data
+              await database.importData(fileContent);
+
+              // Refresh statistics
+              loadStatistics();
+
+              Alert.alert("Success", "Data imported successfully!", [
+                {
+                  text: "OK",
+                  onPress: () => {
+                    // Navigate back to library with refresh parameter
+                    router.push({
+                      pathname: "/",
+                      params: { refresh: Date.now() },
+                    });
+                  },
+                },
+              ]);
+            } catch (error) {
+              console.error("Error importing data:", error);
+              Alert.alert(
+                "Error",
+                error instanceof Error
+                  ? error.message
+                  : "Failed to import data. Please try again."
+              );
+            } finally {
+              setIsImporting(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleResetData = () => {
@@ -140,6 +234,37 @@ export default function ProfileScreen() {
 
       <View style={styles.actionsCard}>
         <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Data Management</Text>
+          <Text style={styles.cardSubtitle}>
+            Import, export, and manage your data
+          </Text>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.exportButton]}
+            onPress={handleExportData}
+            disabled={isExporting}
+          >
+            <Text style={styles.actionButtonText}>
+              {isExporting ? "Exporting..." : "Export Data"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.actionButton, styles.importButton]}
+            onPress={handleImportData}
+            disabled={isImporting}
+          >
+            <Text style={styles.actionButtonText}>
+              {isImporting ? "Importing..." : "Import Data"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.actionsCard}>
+        <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>Account Actions</Text>
           <Text style={styles.cardSubtitle}>Manage your account and data</Text>
         </View>
@@ -213,6 +338,27 @@ const styles = StyleSheet.create({
   cardSubtitle: {
     fontSize: 14,
     color: "#666666",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  exportButton: {
+    backgroundColor: "#2196F3",
+  },
+  importButton: {
+    backgroundColor: "#4CAF50",
+  },
+  actionButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
   resetButton: {
     padding: 12,
