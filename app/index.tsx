@@ -458,7 +458,7 @@ export default function LibraryScreen() {
               style={styles.floatingDeleteButton}
               onPress={handleDeleteFromEdit}
             >
-              <Ionicons name="trash" size={20} color="#FFFFFF" />
+              <Ionicons name="trash" size={24} color="#F44336" />
             </TouchableOpacity>
 
             <View style={styles.modalHeader}>
@@ -778,23 +778,13 @@ const styles = StyleSheet.create({
   },
   floatingDeleteButton: {
     position: "absolute",
-    top: 20,
-    right: 20,
-    backgroundColor: "#FF6B6B",
-    borderRadius: 20,
-    width: 40,
-    height: 40,
+    top: 16,
+    right: 16,
+    width: 48,
+    height: 48,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
   },
   imagePickerButton: {
     backgroundColor: "#FFFFFF",
