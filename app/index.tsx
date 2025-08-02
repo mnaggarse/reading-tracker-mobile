@@ -88,14 +88,14 @@ export default function LibraryScreen() {
     const pagesRead = parseInt(newPagesRead);
     if (isNaN(pagesRead) || pagesRead < 0) {
       showValidationError(
-        "Please enter a valid number of pages (must be 0 or greater)."
+        "يرجى إدخال عدد صحيح من الصفحات (يجب أن يكون 0 أو أكثر)."
       );
       return;
     }
 
     if (pagesRead > selectedBook.totalPages) {
       showValidationError(
-        `You cannot read more pages than the book has. The book has ${selectedBook.totalPages} pages.`
+        `لا يمكنك قراءة صفحات أكثر مما يحتويه الكتاب. الكتاب يحتوي على ${selectedBook.totalPages} صفحة.`
       );
       return;
     }
@@ -142,7 +142,7 @@ export default function LibraryScreen() {
     if (!bookToEdit) return;
 
     if (!editTitle.trim()) {
-      showValidationError("Please enter a book title.");
+      showValidationError("يرجى إدخال عنوان الكتاب.");
       return;
     }
 
@@ -152,7 +152,7 @@ export default function LibraryScreen() {
       Number(editTotalPages) <= 0
     ) {
       showValidationError(
-        "Please enter a valid number of pages (must be greater than 0)."
+        "يرجى إدخال عدد صحيح من الصفحات (يجب أن يكون أكبر من 0)."
       );
       return;
     }
@@ -339,21 +339,19 @@ export default function LibraryScreen() {
         }
       >
         {renderBookSection(
-          "Currently Reading",
+          "أقرأ حالياً",
           getBooksByStatus("reading"),
-          "No books currently being read"
+          "لا توجد كتب تقرأها حالياً"
         )}
-
         {renderBookSection(
-          "To Read",
+          "لقراءتها",
           getBooksByStatus("to-read"),
-          "No books in your reading list"
+          "لا توجد كتب في قائمة القراءة"
         )}
-
         {renderBookSection(
-          "Completed",
+          "مكتملة",
           getBooksByStatus("completed"),
-          "No completed books yet"
+          "لا توجد كتب مكتملة بعد"
         )}
       </ScrollView>
 
@@ -371,19 +369,19 @@ export default function LibraryScreen() {
               <View style={styles.modalIconContainer}>
                 <Ionicons name="book-outline" size={32} color="#3B82F6" />
               </View>
-              <Text style={styles.modalTitle}>Update Progress</Text>
+              <Text style={styles.modalTitle}>تحديث التقدم</Text>
               <Text style={styles.modalBookTitle}>{selectedBook?.title}</Text>
             </View>
 
             <View style={styles.totalPagesInfo}>
-              <Text style={styles.totalPagesLabel}>Total Pages</Text>
+              <Text style={styles.totalPagesLabel}>إجمالي الصفحات</Text>
               <Text style={styles.totalPagesText}>
-                {selectedBook?.totalPages} pages
+                {selectedBook?.totalPages} صفحة
               </Text>
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Pages Read:</Text>
+              <Text style={styles.inputLabel}>الصفحات المقروءة:</Text>
               <View style={styles.inputWithButtons}>
                 <TouchableOpacity
                   style={styles.minusButton}
@@ -429,14 +427,14 @@ export default function LibraryScreen() {
                   setNewPagesRead("");
                 }}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>إلغاء</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.updateButton}
                 onPress={updateBookProgress}
               >
-                <Text style={styles.updateButtonText}>Update</Text>
+                <Text style={styles.updateButtonText}>تحديث</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -465,12 +463,12 @@ export default function LibraryScreen() {
               <View style={styles.modalIconContainer}>
                 <Ionicons name="create" size={32} color="#3B82F6" />
               </View>
-              <Text style={styles.modalTitle}>Edit Book</Text>
+              <Text style={styles.modalTitle}>تعديل الكتاب</Text>
               <Text style={styles.modalBookTitle}>{bookToEdit?.title}</Text>
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Cover Image:</Text>
+              <Text style={styles.inputLabel}>صورة الغلاف:</Text>
               <TouchableOpacity
                 style={styles.imagePickerButton}
                 onPress={pickEditImage}
@@ -484,7 +482,7 @@ export default function LibraryScreen() {
                   <View style={styles.imagePlaceholder}>
                     <Ionicons name="camera" size={32} color="#666666" />
                     <Text style={styles.imagePlaceholderText}>
-                      Select Cover Image
+                      اختر صورة الغلاف
                     </Text>
                   </View>
                 )}
@@ -492,24 +490,24 @@ export default function LibraryScreen() {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Book Title:</Text>
+              <Text style={styles.inputLabel}>عنوان الكتاب:</Text>
               <TextInput
                 style={styles.modalTextInput}
                 value={editTitle}
                 onChangeText={setEditTitle}
-                placeholder="Enter book title"
+                placeholder="أدخل عنوان الكتاب"
                 placeholderTextColor="#999999"
               />
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Total Pages:</Text>
+              <Text style={styles.inputLabel}>إجمالي الصفحات:</Text>
               <TextInput
                 style={styles.modalTextInput}
                 value={editTotalPages}
                 onChangeText={setEditTotalPages}
                 keyboardType="numeric"
-                placeholder="Enter total pages"
+                placeholder="أدخل إجمالي الصفحات"
                 placeholderTextColor="#999999"
               />
             </View>
@@ -526,14 +524,14 @@ export default function LibraryScreen() {
                   setEditCover("");
                 }}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>إلغاء</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.updateButton}
                 onPress={handleEditBook}
               >
-                <Text style={styles.updateButtonText}>Save</Text>
+                <Text style={styles.updateButtonText}>حفظ</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -548,10 +546,10 @@ export default function LibraryScreen() {
           setBookToDelete(null);
         }}
         onConfirm={handleDeleteBook}
-        title="Delete Book"
-        message={`Are you sure you want to delete "${bookToDelete?.title}"? This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title="حذف الكتاب"
+        message={`هل أنت متأكد من حذف "${bookToDelete?.title}"؟ لا يمكن التراجع عن هذا الإجراء.`}
+        confirmText="حذف"
+        cancelText="إلغاء"
         type="danger"
         icon="trash-outline"
       />
@@ -561,9 +559,9 @@ export default function LibraryScreen() {
         visible={validationModalVisible}
         onClose={() => setValidationModalVisible(false)}
         onConfirm={() => setValidationModalVisible(false)}
-        title="Validation Error"
+        title="خطأ في التحقق"
         message={validationMessage}
-        confirmText="OK"
+        confirmText="حسناً"
         type="warning"
         icon="warning-outline"
         showCancelButton={false}
@@ -581,10 +579,10 @@ export default function LibraryScreen() {
           setPendingEditData(null);
           proceedWithEdit();
         }}
-        title="Reset Progress"
-        message={`You are trying to set total pages to ${pendingEditData?.totalPages}, but you have already read ${bookToEdit?.pagesRead} pages. This will reset your reading progress to 0 pages.`}
-        confirmText="Reset Progress"
-        cancelText="Cancel"
+        title="إعادة تعيين التقدم"
+        message={`تحاول تعيين إجمالي الصفحات إلى ${pendingEditData?.totalPages}، لكنك قرأت بالفعل ${bookToEdit?.pagesRead} صفحة. سيؤدي هذا إلى إعادة تعيين تقدم القراءة إلى 0 صفحة.`}
+        confirmText="إعادة تعيين التقدم"
+        cancelText="إلغاء"
         type="danger"
         icon="warning-outline"
       />

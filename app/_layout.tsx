@@ -21,7 +21,7 @@ export default function RootLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Library",
+          title: "المكتبة",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="library" size={size} color={color} />
           ),
@@ -30,7 +30,7 @@ export default function RootLayout() {
       <Tabs.Screen
         name="add-book"
         options={{
-          title: "Add Book",
+          title: "إضافة كتاب",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="add-circle" size={size} color={color} />
           ),
@@ -39,7 +39,7 @@ export default function RootLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: "الملف الشخصي",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),

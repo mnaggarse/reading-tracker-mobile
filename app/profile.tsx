@@ -91,14 +91,14 @@ export default function ProfileScreen() {
         });
       } else {
         Alert.alert(
-          "Export Complete",
-          `Data exported successfully to: ${fileUri}`,
-          [{ text: "OK" }]
+          "اكتمل التصدير",
+          `تم تصدير البيانات بنجاح إلى: ${fileUri}`,
+          [{ text: "حسناً" }]
         );
       }
     } catch (error) {
       console.error("Error exporting data:", error);
-      Alert.alert("Error", "Failed to export data. Please try again.");
+      Alert.alert("خطأ", "فشل في تصدير البيانات. يرجى المحاولة مرة أخرى.");
     } finally {
       setIsExporting(false);
     }
@@ -134,10 +134,10 @@ export default function ProfileScreen() {
     } catch (error) {
       console.error("Error importing data:", error);
       Alert.alert(
-        "Error",
+        "خطأ",
         error instanceof Error
           ? error.message
-          : "Failed to import data. Please try again."
+          : "فشل في استيراد البيانات. يرجى المحاولة مرة أخرى."
       );
     } finally {
       setIsImporting(false);
@@ -153,12 +153,12 @@ export default function ProfileScreen() {
 
       setResetModalVisible(false);
       setSuccessMessage(
-        "All your reading data has been successfully reset. Your library is now empty."
+        "تم إعادة تعيين جميع بيانات القراءة بنجاح. مكتبتك فارغة الآن."
       );
       setSuccessModalVisible(true);
     } catch (error) {
       console.error("Error resetting data:", error);
-      Alert.alert("Error", "Failed to reset data");
+      Alert.alert("خطأ", "فشل في إعادة تعيين البيانات");
     }
   };
 
@@ -172,26 +172,24 @@ export default function ProfileScreen() {
         }
       >
         <View style={styles.header}>
-          <Text style={styles.userName}>Profile</Text>
+          <Text style={styles.userName}>الملف الشخصي</Text>
         </View>
 
         <View style={styles.goalsCard}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Reading Goals</Text>
-            <Text style={styles.cardSubtitle}>
-              Your progress towards reading goals
-            </Text>
+            <Text style={styles.cardTitle}>أهداف القراءة</Text>
+            <Text style={styles.cardSubtitle}>تقدمك نحو أهداف القراءة</Text>
           </View>
 
           <ProgressBar
-            label="Books Completed"
+            label="الكتب المكتملة"
             current={stats.completedBooks}
             total={stats.totalBooks}
             color="#3B82F6"
           />
 
           <ProgressBar
-            label="Pages Read"
+            label="الصفحات المقروءة"
             current={stats.totalPagesRead}
             total={stats.totalPagesGoal}
             color="#4CAF50"
@@ -200,9 +198,9 @@ export default function ProfileScreen() {
 
         <View style={styles.actionsCard}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Data Management</Text>
+            <Text style={styles.cardTitle}>إدارة البيانات</Text>
             <Text style={styles.cardSubtitle}>
-              Import, export, and manage your data
+              استيراد وتصدير وإدارة بياناتك
             </Text>
           </View>
 
@@ -213,7 +211,7 @@ export default function ProfileScreen() {
               disabled={isExporting}
             >
               <Text style={styles.actionButtonText}>
-                {isExporting ? "Exporting..." : "Export Data"}
+                {isExporting ? "جاري التصدير..." : "تصدير البيانات"}
               </Text>
             </TouchableOpacity>
 
@@ -223,7 +221,7 @@ export default function ProfileScreen() {
               disabled={isImporting}
             >
               <Text style={styles.actionButtonText}>
-                {isImporting ? "Importing..." : "Import Data"}
+                {isImporting ? "جاري الاستيراد..." : "استيراد البيانات"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -231,17 +229,15 @@ export default function ProfileScreen() {
 
         <View style={styles.actionsCard}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Danger Zone</Text>
-            <Text style={styles.cardSubtitle}>
-              Delete all your books and progress
-            </Text>
+            <Text style={styles.cardTitle}>منطقة الخطر</Text>
+            <Text style={styles.cardSubtitle}>حذف جميع كتبك وتقدمك</Text>
           </View>
 
           <TouchableOpacity
             style={styles.resetButton}
             onPress={() => setResetModalVisible(true)}
           >
-            <Text style={styles.resetButtonText}>Reset Data</Text>
+            <Text style={styles.resetButtonText}>إعادة تعيين البيانات</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -251,10 +247,10 @@ export default function ProfileScreen() {
         visible={resetModalVisible}
         onClose={() => setResetModalVisible(false)}
         onConfirm={handleResetData}
-        title="Reset All Data"
-        message="Are you sure you want to reset all your reading data? This action cannot be undone and will permanently delete all your books and progress."
-        confirmText="Reset All Data"
-        cancelText="Cancel"
+        title="إعادة تعيين جميع البيانات"
+        message="هل أنت متأكد من إعادة تعيين جميع بيانات القراءة؟ لا يمكن التراجع عن هذا الإجراء وستحذف جميع كتبك وتقدمك نهائياً."
+        confirmText="إعادة تعيين جميع البيانات"
+        cancelText="إلغاء"
         type="danger"
         icon="warning-outline"
       />
@@ -264,10 +260,10 @@ export default function ProfileScreen() {
         visible={importModalVisible}
         onClose={() => setImportModalVisible(false)}
         onConfirm={handleImportData}
-        title="Import Data"
-        message="This will replace all your current reading data with the imported data. Are you sure you want to continue?"
-        confirmText="Import Data"
-        cancelText="Cancel"
+        title="استيراد البيانات"
+        message="سيؤدي هذا إلى استبدال جميع بيانات القراءة الحالية بالبيانات المستوردة. هل أنت متأكد من المتابعة؟"
+        confirmText="استيراد البيانات"
+        cancelText="إلغاء"
         type="warning"
         icon="cloud-download-outline"
       />
@@ -284,9 +280,9 @@ export default function ProfileScreen() {
             params: { refresh: Date.now() },
           });
         }}
-        title="Data Reset Complete"
+        title="اكتملت إعادة تعيين البيانات"
         message={successMessage}
-        confirmText="OK"
+        confirmText="حسناً"
         type="success"
         icon="checkmark-circle-outline"
         showCancelButton={false}
@@ -304,9 +300,9 @@ export default function ProfileScreen() {
             params: { refresh: Date.now() },
           });
         }}
-        title="Import Complete"
-        message="Your reading data has been successfully imported! Your library has been updated with the imported books and progress."
-        confirmText="OK"
+        title="اكتمل الاستيراد"
+        message="تم استيراد بيانات القراءة بنجاح! تم تحديث مكتبتك بالكتب والتقدم المستورد."
+        confirmText="حسناً"
         type="success"
         icon="cloud-download-outline"
         showCancelButton={false}

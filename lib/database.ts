@@ -175,7 +175,7 @@ class DatabaseService {
       return fileUri;
     } catch (error) {
       console.error("Error exporting data:", error);
-      throw new Error("Failed to export data");
+      throw new Error("فشل في تصدير البيانات");
     }
   }
 
@@ -189,7 +189,7 @@ class DatabaseService {
         return {
           isValid: false,
           error:
-            "Invalid file format. Please select a valid reading tracker export file.",
+            "تنسيق ملف غير صحيح. يرجى اختيار ملف تصدير صحيح لتتبع القراءة.",
         };
       }
 
@@ -200,14 +200,14 @@ class DatabaseService {
         if (!book.title || typeof book.title !== "string") {
           return {
             isValid: false,
-            error: "Invalid book data: missing or invalid title",
+            error: "بيانات كتاب غير صحيحة: عنوان مفقود أو غير صحيح",
           };
         }
 
         if (!book.cover || typeof book.cover !== "string") {
           return {
             isValid: false,
-            error: "Invalid book data: missing or invalid cover URL",
+            error: "بيانات كتاب غير صحيحة: رابط غلاف مفقود أو غير صحيح",
           };
         }
 
@@ -218,7 +218,7 @@ class DatabaseService {
         ) {
           return {
             isValid: false,
-            error: "Invalid book data: missing or invalid total pages",
+            error: "بيانات كتاب غير صحيحة: إجمالي صفحات مفقود أو غير صحيح",
           };
         }
 
@@ -229,7 +229,7 @@ class DatabaseService {
         ) {
           return {
             isValid: false,
-            error: "Invalid book data: invalid pages read count",
+            error: "بيانات كتاب غير صحيحة: عدد صفحات مقروءة غير صحيح",
           };
         }
 
@@ -239,14 +239,14 @@ class DatabaseService {
         ) {
           return {
             isValid: false,
-            error: "Invalid book data: invalid status",
+            error: "بيانات كتاب غير صحيحة: حالة غير صحيحة",
           };
         }
 
         if (!book.createdAt || !book.updatedAt) {
           return {
             isValid: false,
-            error: "Invalid book data: missing timestamps",
+            error: "بيانات كتاب غير صحيحة: طوابع زمنية مفقودة",
           };
         }
 
@@ -261,7 +261,7 @@ class DatabaseService {
     } catch (error) {
       return {
         isValid: false,
-        error: "Invalid JSON format. Please select a valid export file.",
+        error: "تنسيق JSON غير صحيح. يرجى اختيار ملف تصدير صحيح.",
       };
     }
   }
@@ -292,7 +292,7 @@ class DatabaseService {
       }
     } catch (error) {
       console.error("Error importing data:", error);
-      throw new Error("Failed to import data");
+      throw new Error("فشل في استيراد البيانات");
     }
   }
 }

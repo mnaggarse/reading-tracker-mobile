@@ -69,7 +69,7 @@ export default function AddBookScreen() {
 
   const handleSubmit = () => {
     if (!title.trim()) {
-      showValidationError("Please enter a book title to continue.");
+      showValidationError("يرجى إدخال عنوان الكتاب للمتابعة.");
       return;
     }
 
@@ -79,13 +79,13 @@ export default function AddBookScreen() {
       Number(totalPages) <= 0
     ) {
       showValidationError(
-        "Please enter a valid number of pages (must be greater than 0)."
+        "يرجى إدخال عدد صحيح من الصفحات (يجب أن يكون أكبر من 0)."
       );
       return;
     }
 
     if (!cover.trim()) {
-      showValidationError("Please select a cover image for your book.");
+      showValidationError("يرجى اختيار صورة غلاف لكتابك.");
       return;
     }
 
@@ -112,7 +112,10 @@ export default function AddBookScreen() {
       });
     } catch (error) {
       console.error("Error adding book:", error);
-      showValidationError("Failed to add book. Please try again.", "warning");
+      showValidationError(
+        "فشل في إضافة الكتاب. يرجى المحاولة مرة أخرى.",
+        "warning"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -126,11 +129,11 @@ export default function AddBookScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Add Book</Text>
+            <Text style={styles.headerTitle}>إضافة كتاب</Text>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cover Image *</Text>
+            <Text style={styles.label}>صورة الغلاف *</Text>
             <TouchableOpacity
               style={styles.imagePickerButton}
               onPress={pickImage}
@@ -141,7 +144,7 @@ export default function AddBookScreen() {
                 <View style={styles.imagePlaceholder}>
                   <Ionicons name="camera" size={32} color="#666666" />
                   <Text style={styles.imagePlaceholderText}>
-                    Select Cover Image
+                    اختر صورة الغلاف
                   </Text>
                 </View>
               )}
@@ -150,23 +153,23 @@ export default function AddBookScreen() {
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Book Title *</Text>
+              <Text style={styles.label}>عنوان الكتاب *</Text>
               <TextInput
                 style={styles.input}
                 value={title}
                 onChangeText={setTitle}
-                placeholder="Enter book title"
+                placeholder="أدخل عنوان الكتاب"
                 placeholderTextColor="#999999"
               />
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Total Pages *</Text>
+              <Text style={styles.label}>إجمالي الصفحات *</Text>
               <TextInput
                 style={styles.input}
                 value={totalPages}
                 onChangeText={setTotalPages}
-                placeholder="Enter total number of pages"
+                placeholder="أدخل إجمالي عدد الصفحات"
                 placeholderTextColor="#999999"
                 keyboardType="numeric"
               />
@@ -181,7 +184,7 @@ export default function AddBookScreen() {
               disabled={isSubmitting}
             >
               <Text style={styles.submitButtonText}>
-                {isSubmitting ? "Adding..." : "Add Book"}
+                {isSubmitting ? "جاري الإضافة..." : "إضافة كتاب"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -193,9 +196,9 @@ export default function AddBookScreen() {
         visible={validationModalVisible}
         onClose={() => setValidationModalVisible(false)}
         onConfirm={() => setValidationModalVisible(false)}
-        title="Missing Information"
+        title="معلومات مفقودة"
         message={validationMessage}
-        confirmText="OK"
+        confirmText="حسناً"
         type={validationType}
         icon="alert-circle-outline"
       />
