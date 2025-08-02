@@ -176,14 +176,12 @@ export default function ProfileScreen() {
             label="الكتب المكتملة"
             current={stats.completedBooks}
             total={stats.totalBooks}
-            color="#3B82F6"
           />
 
           <ProgressBar
             label="الصفحات المقروءة"
             current={stats.totalPagesRead}
             total={stats.totalPagesGoal}
-            color="#4CAF50"
           />
         </View>
 
@@ -208,7 +206,7 @@ export default function ProfileScreen() {
               onPress={() => setImportModalVisible(true)}
               disabled={isImporting}
             >
-              <Text style={styles.actionButtonText}>
+              <Text style={styles.importButtonText}>
                 {isImporting ? "جاري الاستيراد..." : "استيراد البيانات"}
               </Text>
             </TouchableOpacity>
@@ -350,14 +348,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   exportButton: {
-    backgroundColor: colors.success,
+    backgroundColor: colors.primary,
   },
   importButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.background.primary,
+    borderWidth: 1,
+    borderColor: colors.primary,
   },
   actionButtonText: {
     ...textStyles.semiboldBase,
     color: colors.background.primary,
+  },
+  importButtonText: {
+    ...textStyles.semiboldBase,
+    color: colors.primary,
   },
   resetButton: {
     padding: designTokens.sizes.button.paddingVertical,

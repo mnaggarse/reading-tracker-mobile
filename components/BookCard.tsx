@@ -91,17 +91,17 @@ const styles = StyleSheet.create({
   completedBadge: {
     position: "absolute",
     top: designTokens.spacing.sm,
-    right: designTokens.spacing.sm,
+    left: designTokens.spacing.sm,
     backgroundColor: colors.success,
-    borderRadius: designTokens.borderRadius.base,
-    width: 24,
-    height: 24,
+    borderRadius: designTokens.borderRadius.full,
+    width: 32,
+    height: 32,
     justifyContent: "center",
     alignItems: "center",
   },
   completedText: {
     color: colors.background.primary,
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: "bold",
   },
   infoContainer: {
