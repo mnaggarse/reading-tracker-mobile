@@ -17,6 +17,7 @@ import {
 import BookCard from "../components/BookCard";
 import ConfirmModal from "../components/ConfirmModal";
 import { Book, database } from "../lib/database";
+import { colors, textStyles } from "../lib/styles";
 
 export default function LibraryScreen() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -584,7 +585,7 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: colors.background.secondary,
   },
   contentContainer: {
     paddingTop: 40, // Add top padding for status bar
@@ -593,9 +594,8 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333333",
+    ...textStyles.semiboldXl,
+    color: colors.text.primary,
     marginHorizontal: 16,
     marginBottom: 12,
   },
@@ -612,8 +612,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   emptyText: {
-    fontSize: 16,
-    color: "#999999",
+    ...textStyles.regularBase,
+    color: colors.text.light,
     marginTop: 8,
     textAlign: "center",
   },
@@ -628,7 +628,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 16,
     padding: 24,
     margin: 20,
@@ -648,14 +648,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333333",
+    ...textStyles.semiboldLg,
+    color: colors.text.primary,
     textAlign: "center",
   },
   modalBookTitle: {
-    fontSize: 16,
-    color: "#666666",
+    ...textStyles.regularBase,
+    color: colors.text.secondary,
     textAlign: "center",
     marginBottom: 10,
   },
@@ -665,40 +664,37 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   totalPagesLabel: {
-    fontSize: 14,
-    color: "#666666",
+    ...textStyles.regularSm,
+    color: colors.text.secondary,
     marginBottom: 4,
   },
   totalPagesText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333333",
+    ...textStyles.semiboldLg,
+    color: colors.text.primary,
   },
   inputContainer: {
     marginBottom: 24,
   },
   inputLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333333",
+    ...textStyles.semiboldBase,
+    color: colors.text.primary,
     marginBottom: 5,
   },
   modalInput: {
     flex: 1,
     padding: 12,
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333333",
+    ...textStyles.semiboldLg,
+    color: colors.text.primary,
     textAlign: "center",
   },
   inputWithButtons: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F8F9FA",
+    backgroundColor: colors.background.secondary,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: colors.border,
   },
   minusButton: {
     paddingHorizontal: 12,
@@ -717,36 +713,33 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
-    backgroundColor: "#FFFFFF",
+    borderColor: colors.border,
+    backgroundColor: colors.background.primary,
     alignItems: "center",
   },
   cancelButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#666666",
+    ...textStyles.semiboldBase,
+    color: colors.text.secondary,
   },
   updateButton: {
     flex: 1,
     padding: 14,
     borderRadius: 8,
-    backgroundColor: "#3B82F6",
+    backgroundColor: colors.primary,
     alignItems: "center",
   },
   updateButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    ...textStyles.semiboldBase,
+    color: colors.background.primary,
   },
   modalTextInput: {
     padding: 12,
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333333",
+    ...textStyles.semiboldBase,
+    color: colors.text.primary,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
-    backgroundColor: "#FFFFFF",
+    borderColor: colors.border,
+    backgroundColor: colors.background.primary,
     textAlignVertical: "center",
   },
   deleteButton: {
@@ -757,9 +750,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   deleteButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    ...textStyles.semiboldBase,
+    color: colors.background.primary,
   },
   floatingDeleteButton: {
     position: "absolute",
@@ -772,21 +764,21 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   imagePickerButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: colors.border,
     overflow: "hidden",
   },
   imagePlaceholder: {
     height: 120,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F8F9FA",
+    backgroundColor: colors.background.secondary,
   },
   imagePlaceholderText: {
-    fontSize: 14,
-    color: "#666666",
+    ...textStyles.regularSm,
+    color: colors.text.secondary,
     marginTop: 8,
   },
   selectedImage: {

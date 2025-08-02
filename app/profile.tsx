@@ -15,6 +15,7 @@ import {
 import ConfirmModal from "../components/ConfirmModal";
 import ProgressBar from "../components/ProgressBar";
 import { database } from "../lib/database";
+import { colors, textStyles } from "../lib/styles";
 
 interface Statistics {
   totalBooks: number;
@@ -303,7 +304,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: colors.background.secondary,
   },
   contentContainer: {
     paddingTop: 40,
@@ -313,13 +314,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   userName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333333",
+    ...textStyles.semibold2xl,
+    color: colors.text.primary,
     marginBottom: 4,
   },
   goalsCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 12,
     padding: 16,
     marginHorizontal: 8,
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   actionsCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 12,
     padding: 16,
     marginHorizontal: 8,
@@ -338,14 +338,13 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333333",
+    ...textStyles.semiboldLg,
+    color: colors.text.primary,
     marginBottom: 4,
   },
   cardSubtitle: {
-    fontSize: 14,
-    color: "#666666",
+    ...textStyles.regularSm,
+    color: colors.text.secondary,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -358,25 +357,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   exportButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.success,
   },
   importButton: {
-    backgroundColor: "#3B82F6",
+    backgroundColor: colors.primary,
   },
   actionButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    ...textStyles.semiboldSm,
+    color: colors.background.primary,
   },
   resetButton: {
     padding: 12,
     borderRadius: 8,
-    backgroundColor: "#F44336",
+    backgroundColor: colors.danger,
     alignItems: "center",
   },
   resetButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    ...textStyles.semiboldSm,
+    color: colors.background.primary,
   },
 });

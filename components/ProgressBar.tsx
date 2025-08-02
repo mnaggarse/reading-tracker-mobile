@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { colors, textStyles } from "../lib/styles";
 
 interface ProgressBarProps {
   label: string;
@@ -52,13 +53,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#333333",
+    ...textStyles.semiboldSm,
+    color: colors.text.primary,
   },
   value: {
-    fontSize: 12,
-    color: "#666666",
+    ...textStyles.regularXs,
+    color: colors.text.secondary,
   },
   progressContainer: {
     height: 8,

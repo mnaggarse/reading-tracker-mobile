@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import ConfirmModal from "../components/ConfirmModal";
 import { database } from "../lib/database";
+import { colors, textStyles } from "../lib/styles";
 
 export default function AddBookScreen() {
   const [title, setTitle] = useState("");
@@ -205,7 +206,7 @@ export default function AddBookScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: colors.background.secondary,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -217,9 +218,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333333",
+    ...textStyles.semibold2xl,
+    color: colors.text.primary,
   },
   form: {
     flex: 1,
@@ -228,24 +228,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333333",
+    ...textStyles.semiboldBase,
+    color: colors.text.primary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 8,
     padding: 12,
-    fontSize: 16,
+    ...textStyles.regularBase,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: colors.border,
   },
   imagePickerButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: colors.border,
     overflow: "hidden",
   },
   selectedImage: {
@@ -257,26 +256,25 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F8F9FA",
+    backgroundColor: colors.background.secondary,
   },
   imagePlaceholderText: {
-    fontSize: 16,
-    color: "#666666",
+    ...textStyles.regularBase,
+    color: colors.text.secondary,
     marginTop: 8,
   },
   submitButton: {
-    backgroundColor: "#3B82F6",
+    backgroundColor: colors.primary,
     borderRadius: 8,
     padding: 16,
     alignItems: "center",
     marginTop: 20,
   },
   submitButtonDisabled: {
-    backgroundColor: "#CCCCCC",
+    backgroundColor: colors.text.light,
   },
   submitButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+    color: colors.background.primary,
+    ...textStyles.semiboldBase,
   },
 });

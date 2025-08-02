@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { colors, textStyles } from "../lib/styles";
 
 interface ConfirmModalProps {
   visible: boolean;
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 16,
     margin: 20,
     maxWidth: 400,
@@ -143,15 +144,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333333",
+    ...textStyles.semiboldXl,
+    color: colors.text.primary,
     marginBottom: 12,
     textAlign: "center",
   },
   message: {
-    fontSize: 16,
-    color: "#666666",
+    ...textStyles.regularBase,
+    color: colors.text.secondary,
     textAlign: "center",
     lineHeight: 22,
     marginBottom: 24,
@@ -166,14 +166,13 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
-    backgroundColor: "#FFFFFF",
+    borderColor: colors.border,
+    backgroundColor: colors.background.primary,
     alignItems: "center",
   },
   cancelButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#666666",
+    ...textStyles.semiboldBase,
+    color: colors.text.secondary,
   },
   confirmButton: {
     flex: 1,
@@ -182,9 +181,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   confirmButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    ...textStyles.semiboldBase,
+    color: colors.background.primary,
   },
   fullWidthButton: {
     flex: 1,

@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Book } from "../lib/database";
+import { colors, textStyles } from "../lib/styles";
 
 interface BookCardProps {
   book: Book;
@@ -71,7 +72,7 @@ export default function BookCard({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background.primary,
     borderRadius: 12,
     padding: 12,
     marginVertical: 6,
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 8,
     right: 8,
-    backgroundColor: "#4CAF50",
+    backgroundColor: colors.success,
     borderRadius: 12,
     width: 24,
     height: 24,
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   completedText: {
-    color: "#FFFFFF",
+    color: colors.background.primary,
     fontSize: 12,
     fontWeight: "bold",
   },
@@ -114,10 +115,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 14,
-    fontWeight: "600",
+    ...textStyles.semiboldSm,
     textAlign: "center",
-    color: "#333333",
+    color: colors.text.primary,
     marginBottom: 8,
     lineHeight: 18,
   },
@@ -139,9 +139,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   percentageText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666666",
+    ...textStyles.semiboldXs,
+    color: colors.text.secondary,
     textAlign: "right",
   },
 });

@@ -1,10 +1,23 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
 import * as NavigationBar from "expo-navigation-bar";
 import { Tabs } from "expo-router";
+import { fonts } from "../lib/fonts";
 
 export default function RootLayout() {
+  // Load custom fonts
+  const [fontsLoaded] = useFonts({
+    [fonts.regular]: require("../assets/fonts/IBMPlexSansArabic-Regular.ttf"),
+    [fonts.semibold]: require("../assets/fonts/IBMPlexSansArabic-SemiBold.ttf"),
+  });
+
   // Hide the navigation bar
   NavigationBar.setVisibilityAsync("hidden");
+
+  // Don't render until fonts are loaded
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <Tabs
