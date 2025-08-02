@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ConfirmModal from "../components/ConfirmModal";
 import ProgressBar from "../components/ProgressBar";
 import { database } from "../lib/database";
 
@@ -34,6 +35,12 @@ export default function ProfileScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [resetModalVisible, setResetModalVisible] = useState(false);
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [importSuccessModalVisible, setImportSuccessModalVisible] =
+    useState(false);
   const params = useLocalSearchParams();
 
   const loadStatistics = () => {
@@ -98,182 +105,213 @@ export default function ProfileScreen() {
   };
 
   const handleImportData = async () => {
-    Alert.alert(
-      "Import Data",
-      "This will replace all your current reading data. Are you sure you want to continue?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Import",
-          onPress: async () => {
-            setIsImporting(true);
-            try {
-              // Pick document
-              const result = await DocumentPicker.getDocumentAsync({
-                type: "application/json",
-                copyToCacheDirectory: true,
-              });
+    setIsImporting(true);
+    try {
+      // Pick document
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/json",
+        copyToCacheDirectory: true,
+      });
 
-              if (result.canceled || !result.assets[0]) {
-                setIsImporting(false);
-                return;
-              }
+      if (result.canceled || !result.assets[0]) {
+        setIsImporting(false);
+        return;
+      }
 
-              const fileUri = result.assets[0].uri;
+      const fileUri = result.assets[0].uri;
 
-              // Read file content
-              const fileContent = await FileSystem.readAsStringAsync(fileUri);
+      // Read file content
+      const fileContent = await FileSystem.readAsStringAsync(fileUri);
 
-              // Import data
-              await database.importData(fileContent);
+      // Import data
+      await database.importData(fileContent);
 
-              // Refresh statistics
-              loadStatistics();
+      // Refresh statistics
+      loadStatistics();
 
-              Alert.alert("Success", "Data imported successfully!", [
-                {
-                  text: "OK",
-                  onPress: () => {
-                    // Navigate back to library with refresh parameter
-                    router.push({
-                      pathname: "/",
-                      params: { refresh: Date.now() },
-                    });
-                  },
-                },
-              ]);
-            } catch (error) {
-              console.error("Error importing data:", error);
-              Alert.alert(
-                "Error",
-                error instanceof Error
-                  ? error.message
-                  : "Failed to import data. Please try again."
-              );
-            } finally {
-              setIsImporting(false);
-            }
-          },
-        },
-      ]
-    );
+      setImportModalVisible(false);
+      setImportSuccessModalVisible(true);
+    } catch (error) {
+      console.error("Error importing data:", error);
+      Alert.alert(
+        "Error",
+        error instanceof Error
+          ? error.message
+          : "Failed to import data. Please try again."
+      );
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   const handleResetData = () => {
-    Alert.alert(
-      "Reset Data",
-      "Are you sure you want to reset all your reading data? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Reset",
-          style: "destructive",
-          onPress: () => {
-            try {
-              database.resetData();
+    try {
+      database.resetData();
 
-              // Update statistics immediately
-              loadStatistics();
+      // Update statistics immediately
+      loadStatistics();
 
-              Alert.alert("Success", "All data has been reset", [
-                {
-                  text: "OK",
-                  onPress: () => {
-                    // Navigate back to library with refresh parameter
-                    router.push({
-                      pathname: "/",
-                      params: { refresh: Date.now() },
-                    });
-                  },
-                },
-              ]);
-            } catch (error) {
-              console.error("Error resetting data:", error);
-              Alert.alert("Error", "Failed to reset data");
-            }
-          },
-        },
-      ]
-    );
+      setResetModalVisible(false);
+      setSuccessMessage(
+        "All your reading data has been successfully reset. Your library is now empty."
+      );
+      setSuccessModalVisible(true);
+    } catch (error) {
+      console.error("Error resetting data:", error);
+      Alert.alert("Error", "Failed to reset data");
+    }
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      <View style={styles.header}>
-        <Text style={styles.userName}>Profile</Text>
-      </View>
-
-      <View style={styles.goalsCard}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Reading Goals</Text>
-          <Text style={styles.cardSubtitle}>
-            Your progress towards reading goals
-          </Text>
+    <>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.header}>
+          <Text style={styles.userName}>Profile</Text>
         </View>
 
-        <ProgressBar
-          label="Books Completed"
-          current={stats.completedBooks}
-          total={stats.totalBooks}
-          color="#2196F3"
-        />
-
-        <ProgressBar
-          label="Pages Read"
-          current={stats.totalPagesRead}
-          total={stats.totalPagesGoal}
-          color="#4CAF50"
-        />
-      </View>
-
-      <View style={styles.actionsCard}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Data Management</Text>
-          <Text style={styles.cardSubtitle}>
-            Import, export, and manage your data
-          </Text>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.exportButton]}
-            onPress={handleExportData}
-            disabled={isExporting}
-          >
-            <Text style={styles.actionButtonText}>
-              {isExporting ? "Exporting..." : "Export Data"}
+        <View style={styles.goalsCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Reading Goals</Text>
+            <Text style={styles.cardSubtitle}>
+              Your progress towards reading goals
             </Text>
-          </TouchableOpacity>
+          </View>
+
+          <ProgressBar
+            label="Books Completed"
+            current={stats.completedBooks}
+            total={stats.totalBooks}
+            color="#2196F3"
+          />
+
+          <ProgressBar
+            label="Pages Read"
+            current={stats.totalPagesRead}
+            total={stats.totalPagesGoal}
+            color="#4CAF50"
+          />
+        </View>
+
+        <View style={styles.actionsCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Data Management</Text>
+            <Text style={styles.cardSubtitle}>
+              Import, export, and manage your data
+            </Text>
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.exportButton]}
+              onPress={handleExportData}
+              disabled={isExporting}
+            >
+              <Text style={styles.actionButtonText}>
+                {isExporting ? "Exporting..." : "Export Data"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.importButton]}
+              onPress={() => setImportModalVisible(true)}
+              disabled={isImporting}
+            >
+              <Text style={styles.actionButtonText}>
+                {isImporting ? "Importing..." : "Import Data"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.actionsCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Account Actions</Text>
+            <Text style={styles.cardSubtitle}>
+              Manage your account and data
+            </Text>
+          </View>
 
           <TouchableOpacity
-            style={[styles.actionButton, styles.importButton]}
-            onPress={handleImportData}
-            disabled={isImporting}
+            style={styles.resetButton}
+            onPress={() => setResetModalVisible(true)}
           >
-            <Text style={styles.actionButtonText}>
-              {isImporting ? "Importing..." : "Import Data"}
-            </Text>
+            <Text style={styles.resetButtonText}>Reset Data</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
 
-      <View style={styles.actionsCard}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Account Actions</Text>
-          <Text style={styles.cardSubtitle}>Manage your account and data</Text>
-        </View>
+      {/* Reset Data Confirmation Modal */}
+      <ConfirmModal
+        visible={resetModalVisible}
+        onClose={() => setResetModalVisible(false)}
+        onConfirm={handleResetData}
+        title="Reset All Data"
+        message="Are you sure you want to reset all your reading data? This action cannot be undone and will permanently delete all your books and progress."
+        confirmText="Reset All Data"
+        cancelText="Cancel"
+        type="danger"
+        icon="warning-outline"
+      />
 
-        <TouchableOpacity style={styles.resetButton} onPress={handleResetData}>
-          <Text style={styles.resetButtonText}>Reset Data</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      {/* Import Data Confirmation Modal */}
+      <ConfirmModal
+        visible={importModalVisible}
+        onClose={() => setImportModalVisible(false)}
+        onConfirm={handleImportData}
+        title="Import Data"
+        message="This will replace all your current reading data with the imported data. Are you sure you want to continue?"
+        confirmText="Import Data"
+        cancelText="Cancel"
+        type="warning"
+        icon="cloud-download-outline"
+      />
+
+      {/* Success Modal */}
+      <ConfirmModal
+        visible={successModalVisible}
+        onClose={() => setSuccessModalVisible(false)}
+        onConfirm={() => {
+          setSuccessModalVisible(false);
+          // Navigate back to library with refresh parameter
+          router.push({
+            pathname: "/",
+            params: { refresh: Date.now() },
+          });
+        }}
+        title="Data Reset Complete"
+        message={successMessage}
+        confirmText="OK"
+        type="success"
+        icon="checkmark-circle-outline"
+        showCancelButton={false}
+      />
+
+      {/* Import Success Modal */}
+      <ConfirmModal
+        visible={importSuccessModalVisible}
+        onClose={() => setImportSuccessModalVisible(false)}
+        onConfirm={() => {
+          setImportSuccessModalVisible(false);
+          // Navigate back to library with refresh parameter
+          router.push({
+            pathname: "/",
+            params: { refresh: Date.now() },
+          });
+        }}
+        title="Import Complete"
+        message="Your reading data has been successfully imported! Your library has been updated with the imported books and progress."
+        confirmText="OK"
+        type="success"
+        icon="cloud-download-outline"
+        showCancelButton={false}
+      />
+    </>
   );
 }
 

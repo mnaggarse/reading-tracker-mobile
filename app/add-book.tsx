@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import ConfirmModal from "../components/ConfirmModal";
 import { database } from "../lib/database";
 
 export default function AddBookScreen() {
@@ -21,6 +22,11 @@ export default function AddBookScreen() {
   const [cover, setCover] = useState("");
   const [totalPages, setTotalPages] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationModalVisible, setValidationModalVisible] = useState(false);
+  const [validationMessage, setValidationMessage] = useState("");
+  const [validationType, setValidationType] = useState<"warning" | "info">(
+    "warning"
+  );
 
   const pickImage = async () => {
     try {
@@ -52,9 +58,18 @@ export default function AddBookScreen() {
     }
   };
 
+  const showValidationError = (
+    message: string,
+    type: "warning" | "info" = "warning"
+  ) => {
+    setValidationMessage(message);
+    setValidationType(type);
+    setValidationModalVisible(true);
+  };
+
   const handleSubmit = () => {
     if (!title.trim()) {
-      Alert.alert("Error", "Please enter a book title");
+      showValidationError("Please enter a book title to continue.");
       return;
     }
 
@@ -63,12 +78,14 @@ export default function AddBookScreen() {
       isNaN(Number(totalPages)) ||
       Number(totalPages) <= 0
     ) {
-      Alert.alert("Error", "Please enter a valid number of pages");
+      showValidationError(
+        "Please enter a valid number of pages (must be greater than 0)."
+      );
       return;
     }
 
     if (!cover.trim()) {
-      Alert.alert("Error", "Please select a cover image");
+      showValidationError("Please select a cover image for your book.");
       return;
     }
 
@@ -88,94 +105,101 @@ export default function AddBookScreen() {
       setCover("");
       setTotalPages("");
 
-      Alert.alert("Success", "Book added successfully!", [
-        {
-          text: "OK",
-          onPress: () => {
-            // Navigate back to library with refresh parameter
-            router.push({
-              pathname: "/",
-              params: { refresh: Date.now() },
-            });
-          },
-        },
-      ]);
+      // Navigate back to library with refresh parameter
+      router.push({
+        pathname: "/",
+        params: { refresh: Date.now() },
+      });
     } catch (error) {
       console.error("Error adding book:", error);
-      Alert.alert("Error", "Failed to add book. Please try again.");
+      showValidationError("Failed to add book. Please try again.", "warning");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Add Book</Text>
-        </View>
-
-        <View style={styles.form}>
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Book Title *</Text>
-            <TextInput
-              style={styles.input}
-              value={title}
-              onChangeText={setTitle}
-              placeholder="Enter book title"
-              placeholderTextColor="#999999"
-            />
+    <>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Add Book</Text>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Cover Image *</Text>
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Book Title *</Text>
+              <TextInput
+                style={styles.input}
+                value={title}
+                onChangeText={setTitle}
+                placeholder="Enter book title"
+                placeholderTextColor="#999999"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Cover Image *</Text>
+              <TouchableOpacity
+                style={styles.imagePickerButton}
+                onPress={pickImage}
+              >
+                {cover ? (
+                  <Image source={{ uri: cover }} style={styles.selectedImage} />
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Ionicons name="camera" size={32} color="#666666" />
+                    <Text style={styles.imagePlaceholderText}>
+                      Select Cover Image
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Total Pages *</Text>
+              <TextInput
+                style={styles.input}
+                value={totalPages}
+                onChangeText={setTotalPages}
+                placeholder="Enter total number of pages"
+                placeholderTextColor="#999999"
+                keyboardType="numeric"
+              />
+            </View>
+
             <TouchableOpacity
-              style={styles.imagePickerButton}
-              onPress={pickImage}
+              style={[
+                styles.submitButton,
+                isSubmitting && styles.submitButtonDisabled,
+              ]}
+              onPress={handleSubmit}
+              disabled={isSubmitting}
             >
-              {cover ? (
-                <Image source={{ uri: cover }} style={styles.selectedImage} />
-              ) : (
-                <View style={styles.imagePlaceholder}>
-                  <Ionicons name="camera" size={32} color="#666666" />
-                  <Text style={styles.imagePlaceholderText}>
-                    Select Cover Image
-                  </Text>
-                </View>
-              )}
+              <Text style={styles.submitButtonText}>
+                {isSubmitting ? "Adding..." : "Add Book"}
+              </Text>
             </TouchableOpacity>
           </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Total Pages *</Text>
-            <TextInput
-              style={styles.input}
-              value={totalPages}
-              onChangeText={setTotalPages}
-              placeholder="Enter total number of pages"
-              placeholderTextColor="#999999"
-              keyboardType="numeric"
-            />
-          </View>
-
-          <TouchableOpacity
-            style={[
-              styles.submitButton,
-              isSubmitting && styles.submitButtonDisabled,
-            ]}
-            onPress={handleSubmit}
-            disabled={isSubmitting}
-          >
-            <Text style={styles.submitButtonText}>
-              {isSubmitting ? "Adding..." : "Add Book"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      {/* Validation Error Modal */}
+      <ConfirmModal
+        visible={validationModalVisible}
+        onClose={() => setValidationModalVisible(false)}
+        onConfirm={() => setValidationModalVisible(false)}
+        title="Missing Information"
+        message={validationMessage}
+        confirmText="OK"
+        type={validationType}
+        icon="alert-circle-outline"
+      />
+    </>
   );
 }
 
