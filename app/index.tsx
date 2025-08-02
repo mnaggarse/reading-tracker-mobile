@@ -335,6 +335,9 @@ export default function LibraryScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        <View style={styles.header}>
+          <Text style={styles.title}>المكتبة</Text>
+        </View>
         {renderBookSection(
           "قيد القراءة",
           getBooksByStatus("reading"),
@@ -588,8 +591,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.secondary,
   },
   contentContainer: {
-    paddingTop: designTokens.spacing["6xl"], // Add top padding for status bar
+    paddingTop: designTokens.spacing["6xl"],
     paddingBottom: designTokens.spacing.lg,
+  },
+  header: {
+    alignItems: "center",
+    paddingBottom: designTokens.spacing.xl,
+  },
+  title: {
+    ...textStyles.semibold3xl,
+    color: colors.text.primary,
+    marginBottom: designTokens.spacing.sm,
   },
   section: {
     marginVertical: designTokens.spacing.lg,

@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    paddingVertical: designTokens.spacing.xl,
+    paddingBottom: designTokens.spacing.xl,
   },
   userName: {
     ...textStyles.semibold3xl,

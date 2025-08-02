@@ -44,8 +44,8 @@ export default function AddBookScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [3, 4],
-        quality: 0.8,
+        aspect: [2, 3],
+        quality: 1,
       });
 
       if (!result.canceled && result.assets[0]) {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    paddingVertical: designTokens.spacing.xl,
+    paddingBottom: designTokens.spacing.xl,
   },
   headerTitle: {
     ...textStyles.semibold3xl,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     height: designTokens.sizes.image.placeholder.height,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
   },
   imagePlaceholderText: {
     ...textStyles.regularLg,

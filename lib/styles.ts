@@ -109,7 +109,7 @@ export const designTokens = {
         borderRadius: 12,
       },
       placeholder: {
-        height: 240,
+        height: 160,
       },
     },
     progress: {
