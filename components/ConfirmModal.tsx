@@ -22,7 +22,7 @@ export default function ConfirmModal({
   title,
   message,
   confirmText,
-  cancelText = "Cancel",
+  cancelText = "إلغاء",
   type = "info",
   icon,
   showCancelButton = true,
@@ -76,16 +76,6 @@ export default function ConfirmModal({
             <Text style={styles.message}>{message}</Text>
 
             <View style={styles.buttonContainer}>
-              {showCancelButton && (
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={onClose}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.cancelButtonText}>{cancelText}</Text>
-                </TouchableOpacity>
-              )}
-
               <TouchableOpacity
                 style={[
                   styles.confirmButton,
@@ -97,6 +87,15 @@ export default function ConfirmModal({
               >
                 <Text style={styles.confirmButtonText}>{confirmText}</Text>
               </TouchableOpacity>
+              {showCancelButton && (
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={onClose}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.cancelButtonText}>{cancelText}</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>

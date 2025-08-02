@@ -21,7 +21,7 @@ export default function ProgressBar({
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         <Text style={styles.value}>
-          {current}/{total} ({Math.round(percentage)}%)
+          {total}/{current} ({Math.round(percentage)}%)
         </Text>
       </View>
       <View style={styles.progressContainer}>

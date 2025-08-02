@@ -335,14 +335,14 @@ export default function LibraryScreen() {
         }
       >
         {renderBookSection(
-          "أقرأ حالياً",
+          "قيد القراءة",
           getBooksByStatus("reading"),
-          "لا توجد كتب تقرأها حالياً"
+          "لا توجد كتب قيد القراءة"
         )}
         {renderBookSection(
-          "لقراءتها",
+          "لم تبدأ قراءتها",
           getBooksByStatus("to-read"),
-          "لا توجد كتب في قائمة القراءة"
+          "لا توجد كتب لم تبدأ قراءتها"
         )}
         {renderBookSection(
           "مكتملة",
@@ -362,44 +362,18 @@ export default function LibraryScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <View style={styles.modalIconContainer}>
-                <Ionicons name="book-outline" size={32} color="#3B82F6" />
-              </View>
               <Text style={styles.modalTitle}>تحديث التقدم</Text>
               <Text style={styles.modalBookTitle}>{selectedBook?.title}</Text>
             </View>
 
             <View style={styles.totalPagesInfo}>
-              <Text style={styles.totalPagesLabel}>إجمالي الصفحات</Text>
               <Text style={styles.totalPagesText}>
-                {selectedBook?.totalPages} صفحة
+                عدد الصفحات: {selectedBook?.totalPages}
               </Text>
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>الصفحات المقروءة:</Text>
               <View style={styles.inputWithButtons}>
-                <TouchableOpacity
-                  style={styles.minusButton}
-                  onPress={() => {
-                    const current = parseInt(newPagesRead) || 0;
-                    const newValue = Math.max(0, current - 1);
-                    setNewPagesRead(newValue.toString());
-                  }}
-                >
-                  <Ionicons name="remove" size={24} color="#666666" />
-                </TouchableOpacity>
-
-                <TextInput
-                  style={styles.modalInput}
-                  value={newPagesRead}
-                  onChangeText={setNewPagesRead}
-                  keyboardType="numeric"
-                  placeholder="0"
-                  placeholderTextColor="#999999"
-                  textAlign="center"
-                />
-
                 <TouchableOpacity
                   style={styles.plusButton}
                   onPress={() => {
@@ -411,10 +385,36 @@ export default function LibraryScreen() {
                 >
                   <Ionicons name="add" size={24} color="#666666" />
                 </TouchableOpacity>
+
+                <TextInput
+                  style={styles.modalInput}
+                  value={newPagesRead}
+                  onChangeText={setNewPagesRead}
+                  keyboardType="numeric"
+                  placeholder="0"
+                  placeholderTextColor="#999999"
+                  textAlign="center"
+                />
+                <TouchableOpacity
+                  style={styles.minusButton}
+                  onPress={() => {
+                    const current = parseInt(newPagesRead) || 0;
+                    const newValue = Math.max(0, current - 1);
+                    setNewPagesRead(newValue.toString());
+                  }}
+                >
+                  <Ionicons name="remove" size={24} color="#666666" />
+                </TouchableOpacity>
               </View>
             </View>
 
             <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.updateButton}
+                onPress={updateBookProgress}
+              >
+                <Text style={styles.updateButtonText}>تحديث</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={() => {
@@ -424,13 +424,6 @@ export default function LibraryScreen() {
                 }}
               >
                 <Text style={styles.cancelButtonText}>إلغاء</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.updateButton}
-                onPress={updateBookProgress}
-              >
-                <Text style={styles.updateButtonText}>تحديث</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -456,9 +449,6 @@ export default function LibraryScreen() {
             </TouchableOpacity>
 
             <View style={styles.modalHeader}>
-              <View style={styles.modalIconContainer}>
-                <Ionicons name="create" size={32} color="#3B82F6" />
-              </View>
               <Text style={styles.modalTitle}>تعديل الكتاب</Text>
               <Text style={styles.modalBookTitle}>{bookToEdit?.title}</Text>
             </View>
@@ -514,6 +504,12 @@ export default function LibraryScreen() {
 
             <View style={styles.modalButtons}>
               <TouchableOpacity
+                style={styles.updateButton}
+                onPress={handleEditBook}
+              >
+                <Text style={styles.updateButtonText}>حفظ</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={() => {
                   setEditModalVisible(false);
@@ -527,13 +523,6 @@ export default function LibraryScreen() {
                 }}
               >
                 <Text style={styles.cancelButtonText}>إلغاء</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.updateButton}
-                onPress={handleEditBook}
-              >
-                <Text style={styles.updateButtonText}>حفظ</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -598,7 +587,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F9FA",
   },
   contentContainer: {
-    paddingTop: 50, // Add top padding for status bar
+    paddingTop: 40, // Add top padding for status bar
   },
   section: {
     marginVertical: 16,
@@ -619,7 +608,7 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 40,
+    paddingVertical: 30,
     marginHorizontal: 16,
   },
   emptyText: {
@@ -662,18 +651,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#333333",
-    marginBottom: 4,
     textAlign: "center",
   },
   modalBookTitle: {
     fontSize: 16,
     color: "#666666",
     textAlign: "center",
+    marginBottom: 10,
   },
 
   totalPagesInfo: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   totalPagesLabel: {
     fontSize: 14,
@@ -692,7 +681,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#333333",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   modalInput: {
     flex: 1,
@@ -788,7 +777,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E0E0E0",
     overflow: "hidden",
-    marginTop: 8,
   },
   imagePlaceholder: {
     height: 120,

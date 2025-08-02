@@ -129,7 +129,7 @@ export default function AddBookScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>صورة الغلاف *</Text>
+            <Text style={styles.label}>صورة الغلاف</Text>
             <TouchableOpacity
               style={styles.imagePickerButton}
               onPress={pickImage}
@@ -149,7 +149,7 @@ export default function AddBookScreen() {
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>عنوان الكتاب *</Text>
+              <Text style={styles.label}>عنوان الكتاب</Text>
               <TextInput
                 style={styles.input}
                 value={title}
@@ -160,7 +160,7 @@ export default function AddBookScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>إجمالي الصفحات *</Text>
+              <Text style={styles.label}>إجمالي الصفحات</Text>
               <TextInput
                 style={styles.input}
                 value={totalPages}
@@ -209,18 +209,17 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
+    paddingTop: 40,
     padding: 16,
-    paddingTop: 66, // Add top padding for status bar
   },
   header: {
     alignItems: "center",
-    marginBottom: 32,
+    paddingVertical: 16,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#333333",
-    marginTop: 8,
   },
   form: {
     flex: 1,

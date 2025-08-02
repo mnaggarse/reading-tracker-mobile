@@ -240,7 +240,7 @@ export default function ProfileScreen() {
         onConfirm={handleResetData}
         title="إعادة تعيين جميع البيانات"
         message="هل أنت متأكد من إعادة تعيين جميع بيانات القراءة؟ لا يمكن التراجع عن هذا الإجراء وستحذف جميع كتبك وتقدمك نهائياً."
-        confirmText="إعادة تعيين جميع البيانات"
+        confirmText="إعادة تعيين"
         cancelText="إلغاء"
         type="danger"
         icon="warning-outline"
@@ -306,12 +306,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F9FA",
   },
   contentContainer: {
-    paddingTop: 50, // Add top padding for status bar
+    paddingTop: 40,
   },
   header: {
     alignItems: "center",
-    paddingVertical: 24,
-    marginBottom: 16,
+    paddingVertical: 16,
   },
   userName: {
     fontSize: 24,
@@ -325,14 +324,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginHorizontal: 8,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
   },
   actionsCard: {
     backgroundColor: "#FFFFFF",
@@ -340,14 +332,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginHorizontal: 8,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 2,
   },
   cardHeader: {
     marginBottom: 16,
@@ -373,10 +358,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   exportButton: {
-    backgroundColor: "#3B82F6",
+    backgroundColor: "#4CAF50",
   },
   importButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#3B82F6",
   },
   actionButtonText: {
     fontSize: 14,
