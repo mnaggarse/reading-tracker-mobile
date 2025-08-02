@@ -45,7 +45,6 @@ class DatabaseService {
     }
   }
 
-  // Add a new book
   addBook(book: Omit<Book, "id" | "createdAt" | "updatedAt">): number {
     const now = new Date().toISOString();
     const result = this.db.runSync(
@@ -63,7 +62,6 @@ class DatabaseService {
     return result.lastInsertRowId || 0;
   }
 
-  // Get all books
   getBooks(): Book[] {
     const result = this.db.getAllSync(
       "SELECT * FROM books ORDER BY updatedAt DESC"
@@ -71,16 +69,6 @@ class DatabaseService {
     return result as Book[];
   }
 
-  // Get books by status
-  getBooksByStatus(status: Book["status"]): Book[] {
-    const result = this.db.getAllSync(
-      "SELECT * FROM books WHERE status = ? ORDER BY updatedAt DESC",
-      [status]
-    );
-    return result as Book[];
-  }
-
-  // Update book progress
   updateBookProgress(
     id: number,
     pagesRead: number,
@@ -100,7 +88,6 @@ class DatabaseService {
     }
   }
 
-  // Update book details
   updateBookDetails(
     id: number,
     title: string,
@@ -115,12 +102,10 @@ class DatabaseService {
     );
   }
 
-  // Delete book
   deleteBook(id: number): void {
     this.db.runSync("DELETE FROM books WHERE id = ?", [id]);
   }
 
-  // Get reading statistics
   getStatistics(): {
     totalBooks: number;
     completedBooks: number;
@@ -147,12 +132,10 @@ class DatabaseService {
     };
   }
 
-  // Reset all data
   resetData(): void {
     this.db.runSync("DELETE FROM books");
   }
 
-  // Export database to JSON
   async exportData(): Promise<string> {
     try {
       const books = this.getBooks();
@@ -179,7 +162,6 @@ class DatabaseService {
     }
   }
 
-  // Validate imported database file
   validateImportFile(jsonData: string): DatabaseValidationResult {
     try {
       const data = JSON.parse(jsonData);
@@ -196,61 +178,12 @@ class DatabaseService {
       // Validate each book
       const validBooks: Book[] = [];
       for (const book of data.books) {
-        // Check required fields
-        if (!book.title || typeof book.title !== "string") {
+        if (!this.isValidBook(book)) {
           return {
             isValid: false,
-            error: "بيانات كتاب غير صحيحة: عنوان مفقود أو غير صحيح",
+            error: "بيانات كتاب غير صحيحة في الملف المستورد.",
           };
         }
-
-        if (!book.cover || typeof book.cover !== "string") {
-          return {
-            isValid: false,
-            error: "بيانات كتاب غير صحيحة: رابط غلاف مفقود أو غير صحيح",
-          };
-        }
-
-        if (
-          !book.totalPages ||
-          typeof book.totalPages !== "number" ||
-          book.totalPages <= 0
-        ) {
-          return {
-            isValid: false,
-            error: "بيانات كتاب غير صحيحة: إجمالي صفحات مفقود أو غير صحيح",
-          };
-        }
-
-        if (
-          typeof book.pagesRead !== "number" ||
-          book.pagesRead < 0 ||
-          book.pagesRead > book.totalPages
-        ) {
-          return {
-            isValid: false,
-            error: "بيانات كتاب غير صحيحة: عدد صفحات مقروءة غير صحيح",
-          };
-        }
-
-        if (
-          !book.status ||
-          !["reading", "completed", "to-read"].includes(book.status)
-        ) {
-          return {
-            isValid: false,
-            error: "بيانات كتاب غير صحيحة: حالة غير صحيحة",
-          };
-        }
-
-        if (!book.createdAt || !book.updatedAt) {
-          return {
-            isValid: false,
-            error: "بيانات كتاب غير صحيحة: طوابع زمنية مفقودة",
-          };
-        }
-
-        // Add to valid books
         validBooks.push(book);
       }
 
@@ -266,7 +199,6 @@ class DatabaseService {
     }
   }
 
-  // Import data from JSON
   async importData(jsonData: string): Promise<void> {
     const validation = this.validateImportFile(jsonData);
 
@@ -294,6 +226,21 @@ class DatabaseService {
       console.error("Error importing data:", error);
       throw new Error("فشل في استيراد البيانات");
     }
+  }
+
+  private isValidBook(book: any): book is Book {
+    return (
+      typeof book.title === "string" &&
+      typeof book.cover === "string" &&
+      typeof book.totalPages === "number" &&
+      book.totalPages > 0 &&
+      typeof book.pagesRead === "number" &&
+      book.pagesRead >= 0 &&
+      book.pagesRead <= book.totalPages &&
+      ["reading", "completed", "to-read"].includes(book.status) &&
+      typeof book.createdAt === "string" &&
+      typeof book.updatedAt === "string"
+    );
   }
 }
 

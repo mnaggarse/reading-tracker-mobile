@@ -16,11 +16,12 @@ export default function BookCard({
   const progressPercentage =
     book.totalPages > 0 ? (book.pagesRead / book.totalPages) * 100 : 0;
 
-  const getProgressColor = () => {
-    if (book.status === "completed") return "#4CAF50";
-    if (book.status === "reading") return "#3B82F6";
-    return "#E0E0E0";
-  };
+  const progressColor =
+    book.status === "completed"
+      ? "#4CAF50"
+      : book.status === "reading"
+      ? "#3B82F6"
+      : "#E0E0E0";
 
   return (
     <TouchableOpacity
@@ -54,7 +55,7 @@ export default function BookCard({
                 styles.progressFill,
                 {
                   width: `${progressPercentage}%`,
-                  backgroundColor: getProgressColor(),
+                  backgroundColor: progressColor,
                 },
               ]}
             />

@@ -6,7 +6,6 @@ interface ProgressBarProps {
   current: number;
   total: number;
   color?: string;
-  showPercentage?: boolean;
 }
 
 export default function ProgressBar({
@@ -14,7 +13,6 @@ export default function ProgressBar({
   current,
   total,
   color = "#3B82F6",
-  showPercentage = true,
 }: ProgressBarProps) {
   const percentage = total > 0 ? (current / total) * 100 : 0;
 
@@ -23,8 +21,7 @@ export default function ProgressBar({
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         <Text style={styles.value}>
-          {current}/{total}{" "}
-          {showPercentage ? `(${Math.round(percentage)}%)` : ""}
+          {current}/{total} ({Math.round(percentage)}%)
         </Text>
       </View>
       <View style={styles.progressContainer}>

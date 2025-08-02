@@ -30,7 +30,6 @@ export default function AddBookScreen() {
 
   const pickImage = async () => {
     try {
-      // Request permission
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -41,11 +40,10 @@ export default function AddBookScreen() {
         return;
       }
 
-      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [3, 4], // Book cover aspect ratio
+        aspect: [3, 4],
         quality: 0.8,
       });
 
@@ -97,15 +95,13 @@ export default function AddBookScreen() {
         cover: cover.trim(),
         totalPages: Number(totalPages),
         pagesRead: 0,
-        status: "to-read", // Default to "to read" status
+        status: "to-read",
       });
 
-      // Reset form
       setTitle("");
       setCover("");
       setTotalPages("");
 
-      // Navigate back to library with refresh parameter
       router.push({
         pathname: "/",
         params: { refresh: Date.now() },

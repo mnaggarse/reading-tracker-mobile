@@ -1,24 +1,27 @@
 {
   "expo": {
-    "name": "reading-tracker-mobile",
-    "slug": "reading-tracker-mobile",
+    "name": "Reading Tracker",
+    "slug": "reading-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "readingtrackermobile",
+    "scheme": "reading-tracker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mnaggarse.reading-tracker"
     },
     "android": {
+      "package": "com.mnaggarse.reading-tracker",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -40,23 +43,17 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you select book cover images."
+          "photosPermission": "The app accesses your photos to let you select book cover images for your reading library."
         }
       ],
-      [
-        "expo-document-picker",
-        {
-          "iCloudContainerEnvironment": "Production"
-        }
-      ]
+      "expo-document-picker"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "router": {},
       "eas": {
-        "projectId": "62067109-cde6-41c5-8fc8-d92cb6e59710"
+        "projectId": "4c6d5c7b-c343-4b49-8b57-0000eda124d5"
       }
     }
   }

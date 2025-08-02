@@ -31,10 +31,12 @@ export default function LibraryScreen() {
   const [validationMessage, setValidationMessage] = useState("");
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [bookToEdit, setBookToEdit] = useState<Book | null>(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editTotalPages, setEditTotalPages] = useState("");
-  const [editStatus, setEditStatus] = useState<Book["status"]>("to-read");
-  const [editCover, setEditCover] = useState("");
+  const [editForm, setEditForm] = useState({
+    title: "",
+    totalPages: "",
+    status: "to-read" as Book["status"],
+    cover: "",
+  });
   const [pagesWarningModalVisible, setPagesWarningModalVisible] =
     useState(false);
   const [pendingEditData, setPendingEditData] = useState<{
@@ -58,7 +60,6 @@ export default function LibraryScreen() {
     loadBooks();
   }, [refreshTrigger]);
 
-  // Listen for navigation parameters to trigger refresh
   useEffect(() => {
     if (params.refresh) {
       loadBooks();
@@ -115,10 +116,7 @@ export default function LibraryScreen() {
       setSelectedBook(null);
       setNewPagesRead("");
 
-      // Force immediate refresh
       setRefreshTrigger((prev) => prev + 1);
-
-      // Navigate back to library with refresh parameter
       router.push({
         pathname: "/",
         params: { refresh: Date.now() },
@@ -131,25 +129,27 @@ export default function LibraryScreen() {
 
   const handleBookLongPress = (book: Book) => {
     setBookToEdit(book);
-    setEditTitle(book.title);
-    setEditTotalPages(book.totalPages.toString());
-    setEditStatus(book.status);
-    setEditCover(book.cover);
+    setEditForm({
+      title: book.title,
+      totalPages: book.totalPages.toString(),
+      status: book.status,
+      cover: book.cover,
+    });
     setEditModalVisible(true);
   };
 
   const handleEditBook = () => {
     if (!bookToEdit) return;
 
-    if (!editTitle.trim()) {
+    if (!editForm.title.trim()) {
       showValidationError("يرجى إدخال عنوان الكتاب.");
       return;
     }
 
     if (
-      !editTotalPages.trim() ||
-      isNaN(Number(editTotalPages)) ||
-      Number(editTotalPages) <= 0
+      !editForm.totalPages.trim() ||
+      isNaN(Number(editForm.totalPages)) ||
+      Number(editForm.totalPages) <= 0
     ) {
       showValidationError(
         "يرجى إدخال عدد صحيح من الصفحات (يجب أن يكون أكبر من 0)."
@@ -157,12 +157,12 @@ export default function LibraryScreen() {
       return;
     }
 
-    if (Number(editTotalPages) < bookToEdit.pagesRead) {
+    if (Number(editForm.totalPages) < bookToEdit.pagesRead) {
       setPagesWarningModalVisible(true);
       setPendingEditData({
-        title: editTitle,
-        totalPages: Number(editTotalPages),
-        cover: editCover,
+        title: editForm.title,
+        totalPages: Number(editForm.totalPages),
+        cover: editForm.cover,
       });
       return;
     }
@@ -176,17 +176,17 @@ export default function LibraryScreen() {
     try {
       const newTotalPages = pendingEditData
         ? pendingEditData.totalPages
-        : Number(editTotalPages);
+        : Number(editForm.totalPages);
       const newTitle = pendingEditData
         ? pendingEditData.title
-        : editTitle.trim();
-      const newCover = pendingEditData ? pendingEditData.cover : editCover;
+        : editForm.title.trim();
+      const newCover = pendingEditData ? pendingEditData.cover : editForm.cover;
 
       // Reset pages read to 0 if total pages is less than current pages read
       const newPagesRead =
         newTotalPages < bookToEdit.pagesRead ? 0 : bookToEdit.pagesRead;
 
-      let newStatus = editStatus;
+      let newStatus = editForm.status;
       if (newPagesRead === 0) {
         newStatus = "to-read";
       } else if (newPagesRead === newTotalPages) {
@@ -211,17 +211,16 @@ export default function LibraryScreen() {
 
       setEditModalVisible(false);
       setBookToEdit(null);
-      setEditTitle("");
-      setEditTotalPages("");
-      setEditStatus("to-read");
-      setEditCover("");
+      setEditForm({
+        title: "",
+        totalPages: "",
+        status: "to-read",
+        cover: "",
+      });
       setPagesWarningModalVisible(false);
       setPendingEditData(null);
 
-      // Force immediate refresh
       setRefreshTrigger((prev) => prev + 1);
-
-      // Navigate back to library with refresh parameter
       router.push({
         pathname: "/",
         params: { refresh: Date.now() },
@@ -238,16 +237,17 @@ export default function LibraryScreen() {
     setBookToDelete(bookToEdit);
     setEditModalVisible(false);
     setBookToEdit(null);
-    setEditTitle("");
-    setEditTotalPages("");
-    setEditStatus("to-read");
-    setEditCover("");
+    setEditForm({
+      title: "",
+      totalPages: "",
+      status: "to-read",
+      cover: "",
+    });
     setDeleteModalVisible(true);
   };
 
   const pickEditImage = async () => {
     try {
-      // Request permission
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -258,16 +258,15 @@ export default function LibraryScreen() {
         return;
       }
 
-      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [3, 4], // Book cover aspect ratio
+        aspect: [3, 4],
         quality: 0.8,
       });
 
       if (!result.canceled && result.assets[0]) {
-        setEditCover(result.assets[0].uri);
+        setEditForm((prev) => ({ ...prev, cover: result.assets[0].uri }));
       }
     } catch (error) {
       console.error("Error picking image:", error);
@@ -281,13 +280,10 @@ export default function LibraryScreen() {
     try {
       database.deleteBook(bookToDelete.id!);
 
-      // Force immediate refresh
       setRefreshTrigger((prev) => prev + 1);
-
       setDeleteModalVisible(false);
       setBookToDelete(null);
 
-      // Navigate back to library with refresh parameter
       router.push({
         pathname: "/",
         params: { refresh: Date.now() },
@@ -473,9 +469,9 @@ export default function LibraryScreen() {
                 style={styles.imagePickerButton}
                 onPress={pickEditImage}
               >
-                {editCover ? (
+                {editForm.cover ? (
                   <Image
-                    source={{ uri: editCover }}
+                    source={{ uri: editForm.cover }}
                     style={styles.selectedImage}
                   />
                 ) : (
@@ -493,8 +489,10 @@ export default function LibraryScreen() {
               <Text style={styles.inputLabel}>عنوان الكتاب:</Text>
               <TextInput
                 style={styles.modalTextInput}
-                value={editTitle}
-                onChangeText={setEditTitle}
+                value={editForm.title}
+                onChangeText={(text) =>
+                  setEditForm((prev) => ({ ...prev, title: text }))
+                }
                 placeholder="أدخل عنوان الكتاب"
                 placeholderTextColor="#999999"
               />
@@ -504,8 +502,10 @@ export default function LibraryScreen() {
               <Text style={styles.inputLabel}>إجمالي الصفحات:</Text>
               <TextInput
                 style={styles.modalTextInput}
-                value={editTotalPages}
-                onChangeText={setEditTotalPages}
+                value={editForm.totalPages}
+                onChangeText={(text) =>
+                  setEditForm((prev) => ({ ...prev, totalPages: text }))
+                }
                 keyboardType="numeric"
                 placeholder="أدخل إجمالي الصفحات"
                 placeholderTextColor="#999999"
@@ -518,10 +518,12 @@ export default function LibraryScreen() {
                 onPress={() => {
                   setEditModalVisible(false);
                   setBookToEdit(null);
-                  setEditTitle("");
-                  setEditTotalPages("");
-                  setEditStatus("to-read");
-                  setEditCover("");
+                  setEditForm({
+                    title: "",
+                    totalPages: "",
+                    status: "to-read",
+                    cover: "",
+                  });
                 }}
               >
                 <Text style={styles.cancelButtonText}>إلغاء</Text>
@@ -626,13 +628,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: "center",
   },
-  // Modal styles
   modalOverlay: {
     position: "absolute",
-    top: -50, // Extend beyond status bar
+    top: -50,
     left: 0,
     right: 0,
-    bottom: -50, // Extend beyond navigation bar
+    bottom: -50,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
@@ -645,10 +646,7 @@ const styles = StyleSheet.create({
     width: "90%",
     maxWidth: 400,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 10,

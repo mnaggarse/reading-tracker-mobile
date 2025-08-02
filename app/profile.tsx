@@ -64,7 +64,6 @@ export default function ProfileScreen() {
     }
   }, [params.refresh]);
 
-  // Update statistics when profile page comes into focus
   useFocusEffect(
     React.useCallback(() => {
       loadStatistics();
@@ -81,9 +80,8 @@ export default function ProfileScreen() {
     setIsExporting(true);
     try {
       const fileUri = await database.exportData();
-
-      // Check if sharing is available
       const isAvailable = await Sharing.isAvailableAsync();
+
       if (isAvailable) {
         await Sharing.shareAsync(fileUri, {
           mimeType: "application/json",
@@ -107,7 +105,6 @@ export default function ProfileScreen() {
   const handleImportData = async () => {
     setIsImporting(true);
     try {
-      // Pick document
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/json",
         copyToCacheDirectory: true,
@@ -118,15 +115,10 @@ export default function ProfileScreen() {
         return;
       }
 
-      const fileUri = result.assets[0].uri;
-
-      // Read file content
-      const fileContent = await FileSystem.readAsStringAsync(fileUri);
-
-      // Import data
+      const fileContent = await FileSystem.readAsStringAsync(
+        result.assets[0].uri
+      );
       await database.importData(fileContent);
-
-      // Refresh statistics
       loadStatistics();
 
       setImportModalVisible(false);
@@ -148,7 +140,6 @@ export default function ProfileScreen() {
     try {
       database.resetData();
 
-      // Update statistics immediately
       loadStatistics();
 
       setResetModalVisible(false);
@@ -288,13 +279,11 @@ export default function ProfileScreen() {
         showCancelButton={false}
       />
 
-      {/* Import Success Modal */}
       <ConfirmModal
         visible={importSuccessModalVisible}
         onClose={() => setImportSuccessModalVisible(false)}
         onConfirm={() => {
           setImportSuccessModalVisible(false);
-          // Navigate back to library with refresh parameter
           router.push({
             pathname: "/",
             params: { refresh: Date.now() },

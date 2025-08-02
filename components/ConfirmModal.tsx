@@ -27,36 +27,28 @@ export default function ConfirmModal({
   icon,
   showCancelButton = true,
 }: ConfirmModalProps) {
-  const getTypeStyles = () => {
-    switch (type) {
-      case "danger":
-        return {
-          iconColor: "#F44336",
-          confirmButtonColor: "#F44336",
-          iconBackground: "#FFEBEE",
-        };
-      case "warning":
-        return {
-          iconColor: "#FF9800",
-          confirmButtonColor: "#FF9800",
-          iconBackground: "#FFF3E0",
-        };
-      case "success":
-        return {
-          iconColor: "#4CAF50",
-          confirmButtonColor: "#4CAF50",
-          iconBackground: "#E8F5E8",
-        };
-      default:
-        return {
-          iconColor: "#3B82F6",
-          confirmButtonColor: "#3B82F6",
-          iconBackground: "#EFF6FF",
-        };
-    }
-  };
-
-  const typeStyles = getTypeStyles();
+  const typeStyles = {
+    danger: {
+      iconColor: "#F44336",
+      confirmButtonColor: "#F44336",
+      iconBackground: "#FFEBEE",
+    },
+    warning: {
+      iconColor: "#FF9800",
+      confirmButtonColor: "#FF9800",
+      iconBackground: "#FFF3E0",
+    },
+    success: {
+      iconColor: "#4CAF50",
+      confirmButtonColor: "#4CAF50",
+      iconBackground: "#E8F5E8",
+    },
+    info: {
+      iconColor: "#3B82F6",
+      confirmButtonColor: "#3B82F6",
+      iconBackground: "#EFF6FF",
+    },
+  }[type];
 
   return (
     <Modal
