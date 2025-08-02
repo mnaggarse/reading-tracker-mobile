@@ -33,6 +33,10 @@ export default function RootLayout() {
           height: 70,
         },
         headerShown: false, // Hide all page headers
+        tabBarLabelStyle: {
+          fontFamily: fonts.semibold,
+          fontSize: 12,
+        },
       }}
     >
       <Tabs.Screen
