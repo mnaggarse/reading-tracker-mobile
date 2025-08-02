@@ -10,10 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mnaggarse.reading-tracker"
+      "bundleIdentifier": "com.mnaggarse.reading_tracker"
     },
     "android": {
-      "package": "com.mnaggarse.reading-tracker",
+      "package": "com.mnaggarse.reading_tracker",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
