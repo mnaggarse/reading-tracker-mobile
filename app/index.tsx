@@ -754,7 +754,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   modalTextInput: {
-    height: 50,
     padding: 12,
     fontSize: 16,
     fontWeight: "600",
