@@ -59,9 +59,6 @@ export default function BookCard({
               ]}
             />
           </View>
-          <Text style={styles.progressText}>
-            {book.pagesRead} / {book.totalPages} pages
-          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -115,6 +112,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: "600",
+    textAlign: "center",
     color: "#333333",
     marginBottom: 8,
     lineHeight: 18,
@@ -123,7 +121,7 @@ const styles = StyleSheet.create({
     marginTop: "auto",
   },
   progressBar: {
-    height: 6,
+    height: 10,
     backgroundColor: "#F0F0F0",
     borderRadius: 3,
     marginBottom: 4,
@@ -131,11 +129,6 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: "100%",
-    borderRadius: 3,
-  },
-  progressText: {
-    fontSize: 12,
-    color: "#666666",
-    textAlign: "center",
+    borderRadius: 10,
   },
 });

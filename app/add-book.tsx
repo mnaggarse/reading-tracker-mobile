@@ -129,6 +129,25 @@ export default function AddBookScreen() {
             <Text style={styles.headerTitle}>Add Book</Text>
           </View>
 
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Cover Image *</Text>
+            <TouchableOpacity
+              style={styles.imagePickerButton}
+              onPress={pickImage}
+            >
+              {cover ? (
+                <Image source={{ uri: cover }} style={styles.selectedImage} />
+              ) : (
+                <View style={styles.imagePlaceholder}>
+                  <Ionicons name="camera" size={32} color="#666666" />
+                  <Text style={styles.imagePlaceholderText}>
+                    Select Cover Image
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Book Title *</Text>
@@ -139,25 +158,6 @@ export default function AddBookScreen() {
                 placeholder="Enter book title"
                 placeholderTextColor="#999999"
               />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Cover Image *</Text>
-              <TouchableOpacity
-                style={styles.imagePickerButton}
-                onPress={pickImage}
-              >
-                {cover ? (
-                  <Image source={{ uri: cover }} style={styles.selectedImage} />
-                ) : (
-                  <View style={styles.imagePlaceholder}>
-                    <Ionicons name="camera" size={32} color="#666666" />
-                    <Text style={styles.imagePlaceholderText}>
-                      Select Cover Image
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
             </View>
 
             <View style={styles.inputGroup}>

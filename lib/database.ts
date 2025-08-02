@@ -100,6 +100,21 @@ class DatabaseService {
     }
   }
 
+  // Update book details
+  updateBookDetails(
+    id: number,
+    title: string,
+    totalPages: number,
+    status: Book["status"],
+    cover: string
+  ): void {
+    const now = new Date().toISOString();
+    this.db.runSync(
+      "UPDATE books SET title = ?, totalPages = ?, status = ?, cover = ?, updatedAt = ? WHERE id = ?",
+      [title, totalPages, status, cover, now, id]
+    );
+  }
+
   // Delete book
   deleteBook(id: number): void {
     this.db.runSync("DELETE FROM books WHERE id = ?", [id]);

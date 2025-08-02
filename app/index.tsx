@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  Image,
   Modal,
   RefreshControl,
   ScrollView,
@@ -27,6 +29,19 @@ export default function LibraryScreen() {
   const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
   const [validationModalVisible, setValidationModalVisible] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [bookToEdit, setBookToEdit] = useState<Book | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editTotalPages, setEditTotalPages] = useState("");
+  const [editStatus, setEditStatus] = useState<Book["status"]>("to-read");
+  const [editCover, setEditCover] = useState("");
+  const [pagesWarningModalVisible, setPagesWarningModalVisible] =
+    useState(false);
+  const [pendingEditData, setPendingEditData] = useState<{
+    title: string;
+    totalPages: number;
+    cover: string;
+  } | null>(null);
   const params = useLocalSearchParams();
 
   const loadBooks = () => {
@@ -115,8 +130,149 @@ export default function LibraryScreen() {
   };
 
   const handleBookLongPress = (book: Book) => {
-    setBookToDelete(book);
+    setBookToEdit(book);
+    setEditTitle(book.title);
+    setEditTotalPages(book.totalPages.toString());
+    setEditStatus(book.status);
+    setEditCover(book.cover);
+    setEditModalVisible(true);
+  };
+
+  const handleEditBook = () => {
+    if (!bookToEdit) return;
+
+    if (!editTitle.trim()) {
+      showValidationError("Please enter a book title.");
+      return;
+    }
+
+    if (
+      !editTotalPages.trim() ||
+      isNaN(Number(editTotalPages)) ||
+      Number(editTotalPages) <= 0
+    ) {
+      showValidationError(
+        "Please enter a valid number of pages (must be greater than 0)."
+      );
+      return;
+    }
+
+    if (Number(editTotalPages) < bookToEdit.pagesRead) {
+      setPagesWarningModalVisible(true);
+      setPendingEditData({
+        title: editTitle,
+        totalPages: Number(editTotalPages),
+        cover: editCover,
+      });
+      return;
+    }
+
+    proceedWithEdit();
+  };
+
+  const proceedWithEdit = () => {
+    if (!bookToEdit) return;
+
+    try {
+      const newTotalPages = pendingEditData
+        ? pendingEditData.totalPages
+        : Number(editTotalPages);
+      const newTitle = pendingEditData
+        ? pendingEditData.title
+        : editTitle.trim();
+      const newCover = pendingEditData ? pendingEditData.cover : editCover;
+
+      // Reset pages read to 0 if total pages is less than current pages read
+      const newPagesRead =
+        newTotalPages < bookToEdit.pagesRead ? 0 : bookToEdit.pagesRead;
+
+      let newStatus = editStatus;
+      if (newPagesRead === 0) {
+        newStatus = "to-read";
+      } else if (newPagesRead === newTotalPages) {
+        newStatus = "completed";
+      } else {
+        newStatus = "reading";
+      }
+
+      // Update book details in database
+      database.updateBookDetails(
+        bookToEdit.id!,
+        newTitle,
+        newTotalPages,
+        newStatus,
+        newCover
+      );
+
+      // Also update the pages read if it changed
+      if (newPagesRead !== bookToEdit.pagesRead) {
+        database.updateBookProgress(bookToEdit.id!, newPagesRead, newStatus);
+      }
+
+      setEditModalVisible(false);
+      setBookToEdit(null);
+      setEditTitle("");
+      setEditTotalPages("");
+      setEditStatus("to-read");
+      setEditCover("");
+      setPagesWarningModalVisible(false);
+      setPendingEditData(null);
+
+      // Force immediate refresh
+      setRefreshTrigger((prev) => prev + 1);
+
+      // Navigate back to library with refresh parameter
+      router.push({
+        pathname: "/",
+        params: { refresh: Date.now() },
+      });
+    } catch (error) {
+      console.error("Error updating book:", error);
+      Alert.alert("Error", "Failed to update book");
+    }
+  };
+
+  const handleDeleteFromEdit = () => {
+    if (!bookToEdit) return;
+
+    setBookToDelete(bookToEdit);
+    setEditModalVisible(false);
+    setBookToEdit(null);
+    setEditTitle("");
+    setEditTotalPages("");
+    setEditStatus("to-read");
+    setEditCover("");
     setDeleteModalVisible(true);
+  };
+
+  const pickEditImage = async () => {
+    try {
+      // Request permission
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission needed",
+          "Please grant permission to access your photo library"
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [3, 4], // Book cover aspect ratio
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setEditCover(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Failed to pick image. Please try again.");
+    }
   };
 
   const handleDeleteBook = () => {
@@ -287,6 +443,103 @@ export default function LibraryScreen() {
         </View>
       </Modal>
 
+      {/* Edit Book Modal */}
+      <Modal
+        visible={editModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setEditModalVisible(false)}
+        statusBarTranslucent={true}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {/* Floating Delete Button */}
+            <TouchableOpacity
+              style={styles.floatingDeleteButton}
+              onPress={handleDeleteFromEdit}
+            >
+              <Ionicons name="trash" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+
+            <View style={styles.modalHeader}>
+              <View style={styles.modalIconContainer}>
+                <Ionicons name="create" size={32} color="#3B82F6" />
+              </View>
+              <Text style={styles.modalTitle}>Edit Book</Text>
+              <Text style={styles.modalBookTitle}>{bookToEdit?.title}</Text>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Cover Image:</Text>
+              <TouchableOpacity
+                style={styles.imagePickerButton}
+                onPress={pickEditImage}
+              >
+                {editCover ? (
+                  <Image
+                    source={{ uri: editCover }}
+                    style={styles.selectedImage}
+                  />
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Ionicons name="camera" size={32} color="#666666" />
+                    <Text style={styles.imagePlaceholderText}>
+                      Select Cover Image
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Book Title:</Text>
+              <TextInput
+                style={styles.modalTextInput}
+                value={editTitle}
+                onChangeText={setEditTitle}
+                placeholder="Enter book title"
+                placeholderTextColor="#999999"
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Total Pages:</Text>
+              <TextInput
+                style={styles.modalTextInput}
+                value={editTotalPages}
+                onChangeText={setEditTotalPages}
+                keyboardType="numeric"
+                placeholder="Enter total pages"
+                placeholderTextColor="#999999"
+              />
+            </View>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => {
+                  setEditModalVisible(false);
+                  setBookToEdit(null);
+                  setEditTitle("");
+                  setEditTotalPages("");
+                  setEditStatus("to-read");
+                  setEditCover("");
+                }}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.updateButton}
+                onPress={handleEditBook}
+              >
+                <Text style={styles.updateButtonText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       {/* Delete Book Confirmation Modal */}
       <ConfirmModal
         visible={deleteModalVisible}
@@ -314,6 +567,26 @@ export default function LibraryScreen() {
         type="warning"
         icon="warning-outline"
         showCancelButton={false}
+      />
+
+      {/* Pages Warning Modal */}
+      <ConfirmModal
+        visible={pagesWarningModalVisible}
+        onClose={() => {
+          setPagesWarningModalVisible(false);
+          setPendingEditData(null);
+        }}
+        onConfirm={() => {
+          setPagesWarningModalVisible(false);
+          setPendingEditData(null);
+          proceedWithEdit();
+        }}
+        title="Reset Progress"
+        message={`You are trying to set total pages to ${pendingEditData?.totalPages}, but you have already read ${bookToEdit?.pagesRead} pages. This will reset your reading progress to 0 pages.`}
+        confirmText="Reset Progress"
+        cancelText="Cancel"
+        type="danger"
+        icon="warning-outline"
       />
     </>
   );
@@ -417,13 +690,13 @@ const styles = StyleSheet.create({
     color: "#333333",
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   inputLabel: {
     fontSize: 16,
     fontWeight: "600",
     color: "#333333",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   modalInput: {
     flex: 1,
@@ -479,5 +752,73 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#FFFFFF",
+  },
+  modalTextInput: {
+    height: 50,
+    padding: 12,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333333",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    backgroundColor: "#FFFFFF",
+    textAlignVertical: "center",
+  },
+  deleteButton: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 8,
+    backgroundColor: "#FF6B6B",
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  floatingDeleteButton: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    backgroundColor: "#FF6B6B",
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  imagePickerButton: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    overflow: "hidden",
+    marginTop: 8,
+  },
+  imagePlaceholder: {
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F8F9FA",
+  },
+  imagePlaceholderText: {
+    fontSize: 14,
+    color: "#666666",
+    marginTop: 8,
+  },
+  selectedImage: {
+    width: "100%",
+    height: 120,
+    resizeMode: "cover",
   },
 });
