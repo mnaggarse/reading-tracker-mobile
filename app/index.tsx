@@ -344,9 +344,9 @@ export default function LibraryScreen() {
           "لا توجد كتب قيد القراءة"
         )}
         {renderBookSection(
-          "لم تبدأ قراءتها",
+          "للقراءة",
           getBooksByStatus("to-read"),
-          "لا توجد كتب لم تبدأ قراءتها"
+          "لا توجد كتب للقراءة"
         )}
         {renderBookSection(
           "مكتملة",
@@ -596,7 +596,6 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    paddingBottom: designTokens.spacing.xl,
   },
   title: {
     ...textStyles.semibold3xl,

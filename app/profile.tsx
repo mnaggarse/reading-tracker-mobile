@@ -170,7 +170,6 @@ export default function ProfileScreen() {
         <View style={styles.goalsCard}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>أهداف القراءة</Text>
-            <Text style={styles.cardSubtitle}>تقدمك نحو أهداف القراءة</Text>
           </View>
 
           <ProgressBar
@@ -191,9 +190,6 @@ export default function ProfileScreen() {
         <View style={styles.actionsCard}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardTitle}>إدارة البيانات</Text>
-            <Text style={styles.cardSubtitle}>
-              استيراد وتصدير وإدارة بياناتك
-            </Text>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -221,15 +217,14 @@ export default function ProfileScreen() {
 
         <View style={styles.actionsCard}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>منطقة الخطر</Text>
-            <Text style={styles.cardSubtitle}>حذف جميع كتبك وتقدمك</Text>
+            <Text style={styles.cardTitle}>إعادة تعيين البيانات</Text>
           </View>
 
           <TouchableOpacity
             style={styles.resetButton}
             onPress={() => setResetModalVisible(true)}
           >
-            <Text style={styles.resetButtonText}>إعادة تعيين البيانات</Text>
+            <Text style={styles.resetButtonText}>حذف البيانات</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -342,10 +337,7 @@ const styles = StyleSheet.create({
     ...textStyles.semiboldXl,
     color: colors.text.primary,
     marginBottom: designTokens.spacing.sm,
-  },
-  cardSubtitle: {
-    ...textStyles.regularBase,
-    color: colors.text.secondary,
+    textAlign: "center",
   },
   buttonContainer: {
     flexDirection: "row",

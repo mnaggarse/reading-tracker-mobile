@@ -45,7 +45,7 @@ export default function BookCard({
       </View>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.title} numberOfLines={2}>
+        <Text style={styles.title} numberOfLines={1}>
           {book.title}
         </Text>
 
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background.primary,
     borderRadius: designTokens.borderRadius.lg,
-    padding: designTokens.spacing.md,
+    padding: designTokens.spacing.sm,
     marginVertical: designTokens.spacing.sm,
     ...designTokens.shadows.md,
     width: "47%", // Two books per row with proper spacing
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     ...textStyles.semiboldBase,
     textAlign: "center",
     color: colors.text.primary,
-    marginBottom: designTokens.spacing.base,
+    marginBottom: designTokens.spacing.sm,
     lineHeight: 22,
   },
   progressContainer: {
