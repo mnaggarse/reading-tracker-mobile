@@ -1,7 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as NavigationBar from "expo-navigation-bar";
 import { Tabs } from "expo-router";
 
 export default function RootLayout() {
+  // Hide the navigation bar
+  NavigationBar.setVisibilityAsync("hidden");
+
   return (
     <Tabs
       screenOptions={{
@@ -11,9 +15,9 @@ export default function RootLayout() {
           backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
           borderTopColor: "#E0E0E0",
-          paddingBottom: 5,
+          paddingBottom: 20,
           paddingTop: 5,
-          height: 60,
+          height: 70,
         },
         headerShown: false, // Hide all page headers
       }}
