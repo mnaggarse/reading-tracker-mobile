@@ -22,7 +22,7 @@ export default function ProgressBar({
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         <Text style={styles.value}>
-          {total}/{current} ({Math.round(percentage)}%)
+          {total}/{current} ({Math.floor(percentage)}%)
         </Text>
       </View>
       <View style={styles.progressContainer}>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   value: {
-    ...textStyles.regularXs,
+    ...textStyles.semiboldXs,
     color: colors.text.secondary,
   },
   progressContainer: {

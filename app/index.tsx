@@ -692,10 +692,10 @@ const styles = StyleSheet.create({
   modalInput: {
     flex: 1,
     padding: designTokens.sizes.input.paddingHorizontal,
-    // ...textStyles.semiboldXl,
     fontSize: 20,
     color: colors.text.primary,
     textAlign: "center",
+    fontFamily: "IBMPlexSansArabic-SemiBold",
   },
   inputWithButtons: {
     flexDirection: "row",
@@ -750,6 +750,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.background.primary,
     textAlignVertical: "center",
+    fontFamily: "IBMPlexSansArabic-SemiBold",
   },
   deleteButton: {
     flex: 1,
@@ -764,8 +765,8 @@ const styles = StyleSheet.create({
   },
   floatingDeleteButton: {
     position: "absolute",
-    top: designTokens.spacing.md,
-    right: designTokens.spacing.md,
+    top: designTokens.spacing.sm,
+    left: designTokens.spacing.sm,
     width: 48,
     height: 48,
     justifyContent: "center",

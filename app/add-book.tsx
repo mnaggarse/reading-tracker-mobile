@@ -238,6 +238,7 @@ const styles = StyleSheet.create({
     padding: designTokens.sizes.input.paddingHorizontal,
     borderWidth: 1,
     borderColor: colors.border,
+    fontFamily: "IBMPlexSansArabic-SemiBold",
   },
   imagePickerButton: {
     backgroundColor: colors.background.primary,
