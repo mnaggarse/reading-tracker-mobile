@@ -347,7 +347,7 @@ export default function LibraryScreen() {
         {renderBookSection(
           "مكتملة",
           getBooksByStatus("completed"),
-          "لا توجد كتب مكتملة بعد"
+          "لا توجد كتب مكتملة"
         )}
       </ScrollView>
 

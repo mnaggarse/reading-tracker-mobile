@@ -60,6 +60,9 @@ export default function BookCard({
               ]}
             />
           </View>
+          <Text style={styles.percentageText}>
+            {Math.floor(progressPercentage)}%
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -120,16 +123,25 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     marginTop: "auto",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   progressBar: {
+    flex: 1,
     height: 10,
     backgroundColor: "#F0F0F0",
-    borderRadius: 3,
-    marginBottom: 4,
+    borderRadius: 10,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
     borderRadius: 10,
+  },
+  percentageText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#666666",
+    textAlign: "right",
   },
 });
