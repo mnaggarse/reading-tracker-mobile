@@ -149,9 +149,19 @@ class DatabaseService {
       };
 
       const jsonString = JSON.stringify(exportData, null, 2);
-      const fileName = `reading-tracker-export-${
-        new Date().toISOString().split("T")[0]
-      }.json`;
+
+      // Create formatted date string with local time (hours, minutes, seconds)
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const seconds = String(now.getSeconds()).padStart(2, "0");
+
+      const dateString = `${day}-${month}-${year}_${hours}-${minutes}-${seconds}`;
+
+      const fileName = `Reading-Tracker_${dateString}.json`;
       const fileUri = `${FileSystem.documentDirectory}${fileName}`;
 
       await FileSystem.writeAsStringAsync(fileUri, jsonString);
