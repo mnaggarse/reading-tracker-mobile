@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { colors, textStyles } from "../lib/styles";
+import { colors, designTokens, textStyles } from "../lib/styles";
 
 interface ProgressBarProps {
   label: string;
@@ -13,7 +13,7 @@ export default function ProgressBar({
   label,
   current,
   total,
-  color = "#3B82F6",
+  color = colors.primary,
 }: ProgressBarProps) {
   const percentage = total > 0 ? (current / total) * 100 : 0;
 
@@ -44,13 +44,13 @@ export default function ProgressBar({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    marginVertical: designTokens.spacing.sm,
   },
   labelContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: designTokens.spacing.sm,
   },
   label: {
     ...textStyles.semiboldSm,
@@ -61,16 +61,16 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   progressContainer: {
-    height: 8,
+    height: designTokens.sizes.progress.height,
   },
   progressBar: {
     height: "100%",
-    backgroundColor: "#F3F4F6",
-    borderRadius: 6,
+    backgroundColor: designTokens.colors.progress.background,
+    borderRadius: designTokens.sizes.progress.borderRadius,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    borderRadius: 6,
+    borderRadius: designTokens.sizes.progress.borderRadius,
   },
 });

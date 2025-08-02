@@ -3,6 +3,7 @@ import { useFonts } from "expo-font";
 import * as NavigationBar from "expo-navigation-bar";
 import { Tabs } from "expo-router";
 import { fonts } from "../lib/fonts";
+import { designTokens } from "../lib/styles";
 
 export default function RootLayout() {
   // Load custom fonts
@@ -22,20 +23,16 @@ export default function RootLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#6147E5",
-        tabBarInactiveTintColor: "#8A8A8A",
+        tabBarActiveTintColor: designTokens.colors.primary,
+        tabBarInactiveTintColor: designTokens.colors.text.light,
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
+          backgroundColor: designTokens.colors.background.primary,
           borderTopWidth: 1,
-          borderTopColor: "#E5E7EB",
-          paddingBottom: 24,
-          paddingTop: 8,
+          borderTopColor: designTokens.colors.border,
+          paddingBottom: designTokens.spacing.xl,
+          paddingTop: designTokens.spacing.sm,
           height: 80,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          elevation: 8,
+          ...designTokens.shadows.sm,
         },
         headerShown: false, // Hide all page headers
         tabBarLabelStyle: {

@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import ConfirmModal from "../components/ConfirmModal";
 import { database } from "../lib/database";
-import { colors, textStyles } from "../lib/styles";
+import { colors, designTokens, textStyles } from "../lib/styles";
 
 export default function AddBookScreen() {
   const [title, setTitle] = useState("");
@@ -210,12 +210,12 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingTop: 60,
-    padding: 20,
+    paddingTop: designTokens.spacing["6xl"],
+    padding: designTokens.spacing.lg,
   },
   header: {
     alignItems: "center",
-    paddingVertical: 24,
+    paddingVertical: designTokens.spacing.xl,
   },
   headerTitle: {
     ...textStyles.semibold3xl,
@@ -225,35 +225,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   inputGroup: {
-    marginBottom: 24,
+    marginBottom: designTokens.spacing.xl,
   },
   label: {
     ...textStyles.semiboldLg,
     color: colors.text.primary,
-    marginBottom: 12,
+    marginBottom: designTokens.spacing.base,
   },
   input: {
     backgroundColor: colors.background.primary,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: designTokens.borderRadius.md,
+    padding: designTokens.sizes.input.paddingHorizontal,
     ...textStyles.regularLg,
     borderWidth: 1,
     borderColor: colors.border,
   },
   imagePickerButton: {
     backgroundColor: colors.background.primary,
-    borderRadius: 12,
+    borderRadius: designTokens.borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: "hidden",
   },
   selectedImage: {
     width: "100%",
-    height: 240,
+    height: designTokens.sizes.image.placeholder.height,
     resizeMode: "cover",
   },
   imagePlaceholder: {
-    height: 240,
+    height: designTokens.sizes.image.placeholder.height,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.background.secondary,
@@ -261,19 +261,15 @@ const styles = StyleSheet.create({
   imagePlaceholderText: {
     ...textStyles.regularLg,
     color: colors.text.secondary,
-    marginTop: 12,
+    marginTop: designTokens.spacing.base,
   },
   submitButton: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: designTokens.borderRadius.md,
+    padding: designTokens.spacing.lg,
     alignItems: "center",
-    marginTop: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
+    marginTop: designTokens.spacing.xl,
+    ...designTokens.shadows.lg,
   },
   submitButtonDisabled: {
     backgroundColor: colors.text.light,

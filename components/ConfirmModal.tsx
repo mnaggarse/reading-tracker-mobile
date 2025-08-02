@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { colors, textStyles } from "../lib/styles";
+import { colors, designTokens, textStyles } from "../lib/styles";
 
 interface ConfirmModalProps {
   visible: boolean;
@@ -30,23 +30,23 @@ export default function ConfirmModal({
 }: ConfirmModalProps) {
   const typeStyles = {
     danger: {
-      iconColor: "#F44336",
-      confirmButtonColor: "#F44336",
+      iconColor: colors.danger,
+      confirmButtonColor: colors.danger,
       iconBackground: "#FFEBEE",
     },
     warning: {
-      iconColor: "#FF9800",
-      confirmButtonColor: "#FF9800",
+      iconColor: colors.warning,
+      confirmButtonColor: colors.warning,
       iconBackground: "#FFF3E0",
     },
     success: {
-      iconColor: "#4CAF50",
-      confirmButtonColor: "#4CAF50",
+      iconColor: colors.success,
+      confirmButtonColor: colors.success,
       iconBackground: "#E8F5E8",
     },
     info: {
-      iconColor: "#3B82F6",
-      confirmButtonColor: "#3B82F6",
+      iconColor: colors.primary,
+      confirmButtonColor: colors.primary,
       iconBackground: "#EFF6FF",
     },
   }[type];
@@ -118,35 +118,28 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     backgroundColor: colors.background.primary,
-    borderRadius: 20,
-    margin: 24,
+    borderRadius: designTokens.borderRadius.xl,
+    margin: designTokens.spacing.xl,
     maxWidth: 400,
     width: "90%",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    ...designTokens.shadows.xl,
   },
   content: {
-    padding: 28,
+    padding: designTokens.sizes.modal.padding,
     alignItems: "center",
   },
   iconContainer: {
     width: 72,
     height: 72,
-    borderRadius: 36,
+    borderRadius: designTokens.borderRadius.full,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: designTokens.spacing.lg,
   },
   title: {
     ...textStyles.semibold2xl,
     color: colors.text.primary,
-    marginBottom: 16,
+    marginBottom: designTokens.spacing.md,
     textAlign: "center",
   },
   message: {
@@ -154,17 +147,17 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: "center",
     lineHeight: 24,
-    marginBottom: 28,
+    marginBottom: designTokens.spacing["2xl"],
   },
   buttonContainer: {
     flexDirection: "row",
-    gap: 16,
+    gap: designTokens.spacing.md,
     width: "100%",
   },
   cancelButton: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
+    padding: designTokens.sizes.button.paddingVertical,
+    borderRadius: designTokens.borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background.primary,
@@ -176,8 +169,8 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
+    padding: designTokens.sizes.button.paddingVertical,
+    borderRadius: designTokens.borderRadius.md,
     alignItems: "center",
   },
   confirmButtonText: {

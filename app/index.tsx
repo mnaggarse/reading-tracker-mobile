@@ -17,7 +17,7 @@ import {
 import BookCard from "../components/BookCard";
 import ConfirmModal from "../components/ConfirmModal";
 import { Book, database } from "../lib/database";
-import { colors, textStyles } from "../lib/styles";
+import { colors, designTokens, textStyles } from "../lib/styles";
 
 export default function LibraryScreen() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -588,35 +588,35 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.secondary,
   },
   contentContainer: {
-    paddingTop: 60, // Add top padding for status bar
-    paddingBottom: 20,
+    paddingTop: designTokens.spacing["6xl"], // Add top padding for status bar
+    paddingBottom: designTokens.spacing.lg,
   },
   section: {
-    marginVertical: 20,
+    marginVertical: designTokens.spacing.lg,
   },
   sectionTitle: {
     ...textStyles.semibold2xl,
     color: colors.text.primary,
-    marginHorizontal: 20,
-    marginBottom: 16,
+    marginHorizontal: designTokens.spacing.lg,
+    marginBottom: designTokens.spacing.md,
   },
   bookGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    paddingHorizontal: 20,
+    paddingHorizontal: designTokens.spacing.lg,
     justifyContent: "space-between",
-    gap: 12,
+    gap: designTokens.spacing.base,
   },
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 40,
-    marginHorizontal: 20,
+    paddingVertical: designTokens.spacing["4xl"],
+    marginHorizontal: designTokens.spacing.lg,
   },
   emptyText: {
     ...textStyles.regularLg,
     color: colors.text.light,
-    marginTop: 12,
+    marginTop: designTokens.spacing.base,
     textAlign: "center",
   },
   modalOverlay: {
@@ -631,23 +631,19 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: colors.background.primary,
-    borderRadius: 20,
-    padding: 28,
-    margin: 24,
+    borderRadius: designTokens.borderRadius.xl,
+    padding: designTokens.sizes.modal.padding,
+    margin: designTokens.spacing.xl,
     width: "90%",
     maxWidth: 400,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    ...designTokens.shadows.xl,
   },
   modalHeader: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: designTokens.spacing.lg,
   },
   modalIconContainer: {
-    marginBottom: 8,
+    marginBottom: designTokens.spacing.sm,
   },
   modalTitle: {
     ...textStyles.semiboldXl,
@@ -658,12 +654,12 @@ const styles = StyleSheet.create({
     ...textStyles.regularLg,
     color: colors.text.secondary,
     textAlign: "center",
-    marginBottom: 12,
+    marginBottom: designTokens.spacing.base,
   },
 
   totalPagesInfo: {
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: designTokens.spacing.md,
   },
   totalPagesLabel: {
     ...textStyles.regularSm,
@@ -675,16 +671,16 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   inputContainer: {
-    marginBottom: 28,
+    marginBottom: designTokens.spacing["2xl"],
   },
   inputLabel: {
     ...textStyles.semiboldLg,
     color: colors.text.primary,
-    marginBottom: 8,
+    marginBottom: designTokens.spacing.sm,
   },
   modalInput: {
     flex: 1,
-    padding: 16,
+    padding: designTokens.sizes.input.paddingHorizontal,
     ...textStyles.semiboldXl,
     color: colors.text.primary,
     textAlign: "center",
@@ -694,26 +690,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: colors.background.secondary,
-    borderRadius: 12,
+    borderRadius: designTokens.borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
   },
   minusButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: designTokens.sizes.button.paddingHorizontal,
+    paddingVertical: designTokens.sizes.button.paddingVertical,
   },
   plusButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: designTokens.sizes.button.paddingHorizontal,
+    paddingVertical: designTokens.sizes.button.paddingVertical,
   },
   modalButtons: {
     flexDirection: "row",
-    gap: 16,
+    gap: designTokens.spacing.md,
   },
   cancelButton: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
+    padding: designTokens.sizes.button.paddingVertical,
+    borderRadius: designTokens.borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background.primary,
@@ -725,8 +721,8 @@ const styles = StyleSheet.create({
   },
   updateButton: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
+    padding: designTokens.sizes.button.paddingVertical,
+    borderRadius: designTokens.borderRadius.md,
     backgroundColor: colors.primary,
     alignItems: "center",
   },
@@ -735,10 +731,10 @@ const styles = StyleSheet.create({
     color: colors.background.primary,
   },
   modalTextInput: {
-    padding: 16,
+    padding: designTokens.sizes.input.paddingHorizontal,
     ...textStyles.semiboldLg,
     color: colors.text.primary,
-    borderRadius: 12,
+    borderRadius: designTokens.borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background.primary,
@@ -746,8 +742,8 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     flex: 1,
-    padding: 14,
-    borderRadius: 8,
+    padding: designTokens.sizes.button.paddingVertical,
+    borderRadius: designTokens.borderRadius.md,
     backgroundColor: "#FF6B6B",
     alignItems: "center",
   },
@@ -757,8 +753,8 @@ const styles = StyleSheet.create({
   },
   floatingDeleteButton: {
     position: "absolute",
-    top: 16,
-    right: 16,
+    top: designTokens.spacing.md,
+    right: designTokens.spacing.md,
     width: 48,
     height: 48,
     justifyContent: "center",
@@ -767,7 +763,7 @@ const styles = StyleSheet.create({
   },
   imagePickerButton: {
     backgroundColor: colors.background.primary,
-    borderRadius: 12,
+    borderRadius: designTokens.borderRadius.md,
     borderWidth: 1,
     borderColor: colors.border,
     overflow: "hidden",
@@ -781,7 +777,7 @@ const styles = StyleSheet.create({
   imagePlaceholderText: {
     ...textStyles.regularSm,
     color: colors.text.secondary,
-    marginTop: 8,
+    marginTop: designTokens.spacing.sm,
   },
   selectedImage: {
     width: "100%",

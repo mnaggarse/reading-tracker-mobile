@@ -15,7 +15,7 @@ import {
 import ConfirmModal from "../components/ConfirmModal";
 import ProgressBar from "../components/ProgressBar";
 import { database } from "../lib/database";
-import { colors, textStyles } from "../lib/styles";
+import { colors, designTokens, textStyles } from "../lib/styles";
 
 interface Statistics {
   totalBooks: number;
@@ -307,49 +307,41 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.secondary,
   },
   contentContainer: {
-    paddingTop: 60,
-    paddingBottom: 20,
+    paddingTop: designTokens.spacing["6xl"],
+    paddingBottom: designTokens.spacing.lg,
   },
   header: {
     alignItems: "center",
-    paddingVertical: 24,
+    paddingVertical: designTokens.spacing.xl,
   },
   userName: {
     ...textStyles.semibold3xl,
     color: colors.text.primary,
-    marginBottom: 8,
+    marginBottom: designTokens.spacing.sm,
   },
   goalsCard: {
     backgroundColor: colors.background.primary,
-    borderRadius: 16,
-    padding: 20,
-    marginHorizontal: 12,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 6,
+    borderRadius: designTokens.borderRadius.lg,
+    padding: designTokens.sizes.card.padding,
+    marginHorizontal: designTokens.spacing.base,
+    marginBottom: designTokens.sizes.card.marginBottom,
+    ...designTokens.shadows.md,
   },
   actionsCard: {
     backgroundColor: colors.background.primary,
-    borderRadius: 16,
-    padding: 20,
-    marginHorizontal: 12,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 6,
+    borderRadius: designTokens.borderRadius.lg,
+    padding: designTokens.sizes.card.padding,
+    marginHorizontal: designTokens.spacing.base,
+    marginBottom: designTokens.sizes.card.marginBottom,
+    ...designTokens.shadows.md,
   },
   cardHeader: {
-    marginBottom: 20,
+    marginBottom: designTokens.spacing.lg,
   },
   cardTitle: {
     ...textStyles.semiboldXl,
     color: colors.text.primary,
-    marginBottom: 8,
+    marginBottom: designTokens.spacing.sm,
   },
   cardSubtitle: {
     ...textStyles.regularBase,
@@ -357,12 +349,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    gap: 16,
+    gap: designTokens.spacing.md,
   },
   actionButton: {
     flex: 1,
-    padding: 16,
-    borderRadius: 12,
+    padding: designTokens.sizes.button.paddingVertical,
+    borderRadius: designTokens.borderRadius.md,
     alignItems: "center",
   },
   exportButton: {
@@ -376,8 +368,8 @@ const styles = StyleSheet.create({
     color: colors.background.primary,
   },
   resetButton: {
-    padding: 16,
-    borderRadius: 12,
+    padding: designTokens.sizes.button.paddingVertical,
+    borderRadius: designTokens.borderRadius.md,
     backgroundColor: colors.danger,
     alignItems: "center",
   },

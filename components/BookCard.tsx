@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Book } from "../lib/database";
-import { colors, textStyles } from "../lib/styles";
+import { colors, designTokens, textStyles } from "../lib/styles";
 
 interface BookCardProps {
   book: Book;
@@ -19,10 +19,10 @@ export default function BookCard({
 
   const progressColor =
     book.status === "completed"
-      ? "#4CAF50"
+      ? colors.success
       : book.status === "reading"
-      ? "#6147E5"
-      : "#E5E7EB";
+      ? colors.primary
+      : designTokens.colors.progress.background;
 
   return (
     <TouchableOpacity
@@ -73,34 +73,27 @@ export default function BookCard({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background.primary,
-    borderRadius: 16,
-    padding: 16,
-    marginVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 8,
+    borderRadius: designTokens.borderRadius.lg,
+    padding: designTokens.spacing.md,
+    marginVertical: designTokens.spacing.sm,
+    ...designTokens.shadows.md,
     width: "47%", // Two books per row with proper spacing
   },
   coverContainer: {
     position: "relative",
-    marginBottom: 8,
+    marginBottom: designTokens.spacing.sm,
   },
   cover: {
     width: "100%",
-    height: 220,
-    borderRadius: 12,
+    height: designTokens.sizes.image.cover.height,
+    borderRadius: designTokens.sizes.image.cover.borderRadius,
   },
   completedBadge: {
     position: "absolute",
-    top: 8,
-    right: 8,
+    top: designTokens.spacing.sm,
+    right: designTokens.spacing.sm,
     backgroundColor: colors.success,
-    borderRadius: 12,
+    borderRadius: designTokens.borderRadius.base,
     width: 24,
     height: 24,
     justifyContent: "center",
@@ -118,25 +111,25 @@ const styles = StyleSheet.create({
     ...textStyles.semiboldBase,
     textAlign: "center",
     color: colors.text.primary,
-    marginBottom: 12,
+    marginBottom: designTokens.spacing.base,
     lineHeight: 22,
   },
   progressContainer: {
     marginTop: "auto",
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: designTokens.spacing.sm,
   },
   progressBar: {
     flex: 1,
-    height: 12,
-    backgroundColor: "#F3F4F6",
-    borderRadius: 6,
+    height: designTokens.sizes.progress.height,
+    backgroundColor: designTokens.colors.progress.background,
+    borderRadius: designTokens.sizes.progress.borderRadius,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    borderRadius: 6,
+    borderRadius: designTokens.sizes.progress.borderRadius,
   },
   percentageText: {
     ...textStyles.semiboldSm,
