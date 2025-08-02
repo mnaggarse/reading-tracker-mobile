@@ -64,6 +64,7 @@ export default function ConfirmModal({
       transparent={true}
       animationType="fade"
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
       <View style={styles.overlay}>
         <View style={styles.modalContainer}>
@@ -114,7 +115,11 @@ export default function ConfirmModal({
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    position: "absolute",
+    top: -50, // Extend beyond status bar
+    left: 0,
+    right: 0,
+    bottom: -50, // Extend beyond navigation bar
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
