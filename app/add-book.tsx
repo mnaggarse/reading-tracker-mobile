@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.primary,
     borderRadius: designTokens.borderRadius.md,
     padding: designTokens.sizes.input.paddingHorizontal,
-    ...textStyles.regularLg,
     borderWidth: 1,
     borderColor: colors.border,
   },

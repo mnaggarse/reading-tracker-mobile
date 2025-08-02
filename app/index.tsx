@@ -681,7 +681,8 @@ const styles = StyleSheet.create({
   modalInput: {
     flex: 1,
     padding: designTokens.sizes.input.paddingHorizontal,
-    ...textStyles.semiboldXl,
+    // ...textStyles.semiboldXl,
+    fontSize: 20,
     color: colors.text.primary,
     textAlign: "center",
   },
@@ -732,7 +733,6 @@ const styles = StyleSheet.create({
   },
   modalTextInput: {
     padding: designTokens.sizes.input.paddingHorizontal,
-    ...textStyles.semiboldLg,
     color: colors.text.primary,
     borderRadius: designTokens.borderRadius.md,
     borderWidth: 1,
