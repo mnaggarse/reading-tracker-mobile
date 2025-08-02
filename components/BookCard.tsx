@@ -21,8 +21,8 @@ export default function BookCard({
     book.status === "completed"
       ? "#4CAF50"
       : book.status === "reading"
-      ? "#3B82F6"
-      : "#E0E0E0";
+      ? "#6147E5"
+      : "#E5E7EB";
 
   return (
     <TouchableOpacity
@@ -73,17 +73,17 @@ export default function BookCard({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background.primary,
-    borderRadius: 12,
-    padding: 12,
-    marginVertical: 6,
+    borderRadius: 16,
+    padding: 16,
+    marginVertical: 8,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 8,
     width: "47%", // Two books per row with proper spacing
   },
   coverContainer: {
@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
   },
   cover: {
     width: "100%",
-    height: 200,
-    borderRadius: 8,
+    height: 220,
+    borderRadius: 12,
   },
   completedBadge: {
     position: "absolute",
@@ -115,11 +115,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    ...textStyles.semiboldSm,
+    ...textStyles.semiboldBase,
     textAlign: "center",
     color: colors.text.primary,
-    marginBottom: 8,
-    lineHeight: 18,
+    marginBottom: 12,
+    lineHeight: 22,
   },
   progressContainer: {
     marginTop: "auto",
@@ -129,17 +129,17 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     flex: 1,
-    height: 10,
-    backgroundColor: "#F0F0F0",
-    borderRadius: 10,
+    height: 12,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 6,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    borderRadius: 10,
+    borderRadius: 6,
   },
   percentageText: {
-    ...textStyles.semiboldXs,
+    ...textStyles.semiboldSm,
     color: colors.text.secondary,
     textAlign: "right",
   },

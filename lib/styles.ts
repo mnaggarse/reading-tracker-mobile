@@ -38,19 +38,19 @@ export const textStyles = StyleSheet.create({
 
 // Color constants for consistency
 export const colors = {
-  primary: "#3B82F6",
+  primary: "#6147E5",
   secondary: "#666666",
   success: "#4CAF50",
   warning: "#FF9800",
   danger: "#F44336",
   text: {
-    primary: "#333333",
-    secondary: "#666666",
-    light: "#999999",
+    primary: "#1A1A1A",
+    secondary: "#4A4A4A",
+    light: "#8A8A8A",
   },
   background: {
     primary: "#FFFFFF",
     secondary: "#F8F9FA",
   },
-  border: "#E0E0E0",
+  border: "#E5E7EB",
 } as const;

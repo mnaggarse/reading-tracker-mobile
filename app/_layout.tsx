@@ -22,20 +22,26 @@ export default function RootLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#3B82F6",
-        tabBarInactiveTintColor: "#666666",
+        tabBarActiveTintColor: "#6147E5",
+        tabBarInactiveTintColor: "#8A8A8A",
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
           borderTopWidth: 1,
-          borderTopColor: "#E0E0E0",
-          paddingBottom: 20,
-          paddingTop: 5,
-          height: 70,
+          borderTopColor: "#E5E7EB",
+          paddingBottom: 24,
+          paddingTop: 8,
+          height: 80,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 8,
         },
         headerShown: false, // Hide all page headers
         tabBarLabelStyle: {
           fontFamily: fonts.semibold,
-          fontSize: 12,
+          fontSize: 13,
+          marginTop: 4,
         },
       }}
     >
