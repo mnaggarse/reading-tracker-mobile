@@ -33,11 +33,18 @@ export default function BookCard({
       activeOpacity={0.7}
     >
       <View style={styles.coverContainer}>
-        <Image
-          source={{ uri: book.cover }}
-          style={styles.cover}
-          resizeMode="cover"
-        />
+        {book.cover ? (
+          <Image
+            source={{ uri: book.cover }}
+            style={styles.cover}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.coverPlaceholder}>
+            <Ionicons name="book-outline" size={48} color="#CCCCCC" />
+            <Text style={styles.coverPlaceholderText}>{book.title}</Text>
+          </View>
+        )}
         {book.status === "completed" && (
           <View style={styles.completedBadge}>
             <Text style={styles.completedText}>✓</Text>
@@ -97,6 +104,21 @@ const styles = StyleSheet.create({
     width: "100%",
     height: designTokens.sizes.image.cover.height,
     borderRadius: designTokens.sizes.image.cover.borderRadius,
+  },
+  coverPlaceholder: {
+    width: "100%",
+    height: designTokens.sizes.image.cover.height,
+    borderRadius: designTokens.sizes.image.cover.borderRadius,
+    backgroundColor: colors.background.secondary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  coverPlaceholderText: {
+    ...textStyles.regularSm,
+    color: colors.text.light,
+    textAlign: "center",
+    marginTop: designTokens.spacing.sm,
+    paddingHorizontal: designTokens.spacing.sm,
   },
   completedBadge: {
     position: "absolute",

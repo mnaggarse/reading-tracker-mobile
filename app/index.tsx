@@ -575,7 +575,7 @@ export default function LibraryScreen() {
                   />
                 ) : (
                   <View style={styles.imagePlaceholder}>
-                    <Ionicons name="camera" size={32} color="#666666" />
+                    <Ionicons name="camera" size={26} color="#666666" />
                     <Text style={styles.imagePlaceholderText}>
                       اختر صورة الغلاف
                     </Text>
@@ -591,21 +591,25 @@ export default function LibraryScreen() {
                 onPress={pickEditPdfFile}
               >
                 {editForm.pdfPath ? (
-                  <View style={styles.selectedImage}>
-                    <Ionicons name="document" size={32} color="#666666" />
-                    <Text style={styles.imagePlaceholderText}>
-                      تم اختيار PDF: {editForm.pdfPath.split("/").pop()}
+                  <View style={styles.pdfSelected}>
+                    <Ionicons
+                      name="document"
+                      size={26}
+                      color={colors.primary}
+                    />
+                    <Text style={styles.pdfSelectedText}>
+                      تم اختيار ملف PDF
                     </Text>
                   </View>
                 ) : (
-                  <View style={styles.imagePlaceholder}>
+                  <View style={styles.pdfPlaceholder}>
                     <Ionicons
                       name="document-outline"
-                      size={32}
+                      size={26}
                       color="#666666"
                     />
-                    <Text style={styles.imagePlaceholderText}>
-                      اختر ملف PDF
+                    <Text style={styles.pdfPlaceholderText}>
+                      ملف PDF (اختياري)
                     </Text>
                   </View>
                 )}
@@ -932,19 +936,43 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   imagePlaceholder: {
-    height: 140,
+    height: 60,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
+    gap: designTokens.spacing.sm,
   },
   imagePlaceholderText: {
-    ...textStyles.regularSm,
+    ...textStyles.regularLg,
     color: colors.text.secondary,
-    marginTop: designTokens.spacing.sm,
   },
   selectedImage: {
     width: "100%",
-    height: 140,
+    height: 60,
     resizeMode: "cover",
+  },
+  pdfSelected: {
+    height: 60,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: designTokens.spacing.sm,
+  },
+  pdfSelectedText: {
+    ...textStyles.regularLg,
+    color: colors.primary,
+  },
+  pdfPlaceholder: {
+    height: 60,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background.primary,
+    gap: designTokens.spacing.sm,
+  },
+  pdfPlaceholderText: {
+    ...textStyles.regularLg,
+    color: colors.text.secondary,
   },
 });

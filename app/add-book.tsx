@@ -90,16 +90,6 @@ export default function AddBookScreen() {
       return;
     }
 
-    if (!cover.trim()) {
-      showValidationError("يرجى اختيار صورة غلاف لكتابك.");
-      return;
-    }
-
-    if (!pdfPath.trim()) {
-      showValidationError("يرجى اختيار ملف PDF للكتاب.");
-      return;
-    }
-
     if (
       !totalPages.trim() ||
       isNaN(Number(totalPages)) ||
@@ -116,8 +106,8 @@ export default function AddBookScreen() {
     try {
       database.addBook({
         title: title.trim(),
-        cover: cover.trim(),
-        pdfPath: pdfPath.trim(),
+        cover: cover.trim() || "",
+        pdfPath: pdfPath.trim() || "",
         totalPages: Number(totalPages),
         pagesRead: 0,
         status: "to-read",
@@ -164,9 +154,9 @@ export default function AddBookScreen() {
                 <Image source={{ uri: cover }} style={styles.selectedImage} />
               ) : (
                 <View style={styles.imagePlaceholder}>
-                  <Ionicons name="camera" size={32} color="#666666" />
+                  <Ionicons name="book-outline" size={26} color="#666666" />
                   <Text style={styles.imagePlaceholderText}>
-                    اختر صورة الغلاف
+                    صورة الغلاف (اختياري)
                   </Text>
                 </View>
               )}
@@ -181,14 +171,14 @@ export default function AddBookScreen() {
             >
               {pdfPath ? (
                 <View style={styles.pdfSelected}>
-                  <Ionicons name="document" size={32} color={colors.primary} />
+                  <Ionicons name="document" size={26} color={colors.primary} />
                   <Text style={styles.pdfSelectedText}>تم اختيار ملف PDF</Text>
                 </View>
               ) : (
                 <View style={styles.pdfPlaceholder}>
-                  <Ionicons name="document-outline" size={32} color="#666666" />
+                  <Ionicons name="document-outline" size={26} color="#666666" />
                   <Text style={styles.pdfPlaceholderText}>
-                    اختر ملف PDF للكتاب
+                    ملف PDF (اختياري)
                   </Text>
                 </View>
               )}
@@ -296,19 +286,20 @@ const styles = StyleSheet.create({
   },
   selectedImage: {
     width: "100%",
-    height: designTokens.sizes.image.placeholder.height,
+    height: 60,
     resizeMode: "cover",
   },
   imagePlaceholder: {
-    height: designTokens.sizes.image.placeholder.height,
+    height: 60,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.background.primary,
+    gap: designTokens.spacing.sm,
   },
   imagePlaceholderText: {
     ...textStyles.regularLg,
     color: colors.text.secondary,
-    marginTop: designTokens.spacing.base,
   },
   pdfPickerButton: {
     backgroundColor: colors.background.primary,
@@ -318,26 +309,27 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   pdfSelected: {
-    height: 80,
+    height: 60,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.background.secondary,
+    gap: designTokens.spacing.sm,
   },
   pdfSelectedText: {
-    ...textStyles.regularBase,
+    ...textStyles.regularLg,
     color: colors.primary,
-    marginTop: designTokens.spacing.sm,
   },
   pdfPlaceholder: {
-    height: 80,
+    height: 60,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: colors.background.primary,
+    gap: designTokens.spacing.sm,
   },
   pdfPlaceholderText: {
     ...textStyles.regularLg,
     color: colors.text.secondary,
-    marginTop: designTokens.spacing.base,
   },
   submitButton: {
     backgroundColor: colors.primary,
