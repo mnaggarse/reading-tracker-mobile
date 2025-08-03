@@ -5,6 +5,7 @@ export interface Book {
   id?: number;
   title: string;
   cover: string;
+  pdfPath?: string;
   totalPages: number;
   pagesRead: number;
   status: "reading" | "completed" | "to-read";
@@ -40,6 +41,14 @@ class DatabaseService {
           updatedAt TEXT NOT NULL
         );`
       );
+
+      // Add pdfPath column if it doesn't exist (migration)
+      try {
+        this.db.execSync("ALTER TABLE books ADD COLUMN pdfPath TEXT;");
+      } catch (error) {
+        // Column already exists, ignore the error
+        console.log("pdfPath column already exists");
+      }
     } catch (error) {
       console.error("Error initializing database:", error);
     }
@@ -48,7 +57,7 @@ class DatabaseService {
   addBook(book: Omit<Book, "id" | "createdAt" | "updatedAt">): number {
     const now = new Date().toISOString();
     const result = this.db.runSync(
-      "INSERT INTO books (title, cover, totalPages, pagesRead, status, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO books (title, cover, totalPages, pagesRead, status, createdAt, updatedAt, pdfPath) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [
         book.title,
         book.cover,
@@ -57,6 +66,7 @@ class DatabaseService {
         book.status,
         now,
         now,
+        book.pdfPath || null,
       ]
     );
     return result.lastInsertRowId || 0;
@@ -93,12 +103,13 @@ class DatabaseService {
     title: string,
     totalPages: number,
     status: Book["status"],
-    cover: string
+    cover: string,
+    pdfPath?: string
   ): void {
     const now = new Date().toISOString();
     this.db.runSync(
-      "UPDATE books SET title = ?, totalPages = ?, status = ?, cover = ?, updatedAt = ? WHERE id = ?",
-      [title, totalPages, status, cover, now, id]
+      "UPDATE books SET title = ?, totalPages = ?, status = ?, cover = ?, pdfPath = ?, updatedAt = ? WHERE id = ?",
+      [title, totalPages, status, cover, pdfPath || null, now, id]
     );
   }
 
@@ -134,6 +145,17 @@ class DatabaseService {
 
   resetData(): void {
     this.db.runSync("DELETE FROM books");
+  }
+
+  resetDatabaseSchema(): void {
+    try {
+      // Drop the existing table
+      this.db.execSync("DROP TABLE IF EXISTS books;");
+      // Recreate with the new schema
+      this.initDatabase();
+    } catch (error) {
+      console.error("Error resetting database schema:", error);
+    }
   }
 
   async exportData(): Promise<string> {
@@ -226,6 +248,7 @@ class DatabaseService {
           this.addBook({
             title: book.title,
             cover: book.cover,
+            pdfPath: book.pdfPath,
             totalPages: book.totalPages,
             pagesRead: book.pagesRead,
             status: book.status,
@@ -242,6 +265,7 @@ class DatabaseService {
     return (
       typeof book.title === "string" &&
       typeof book.cover === "string" &&
+      (book.pdfPath === undefined || typeof book.pdfPath === "string") &&
       typeof book.totalPages === "number" &&
       book.totalPages > 0 &&
       typeof book.pagesRead === "number" &&

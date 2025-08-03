@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ import {
 } from "react-native";
 import BookCard from "../components/BookCard";
 import ConfirmModal from "../components/ConfirmModal";
+import PdfReader from "../components/PdfReader";
 import { Book, database } from "../lib/database";
 import { colors, designTokens, textStyles } from "../lib/styles";
 
@@ -37,6 +39,7 @@ export default function LibraryScreen() {
     totalPages: "",
     status: "to-read" as Book["status"],
     cover: "",
+    pdfPath: "",
   });
   const [pagesWarningModalVisible, setPagesWarningModalVisible] =
     useState(false);
@@ -45,6 +48,10 @@ export default function LibraryScreen() {
     totalPages: number;
     cover: string;
   } | null>(null);
+  const [pdfReaderVisible, setPdfReaderVisible] = useState(false);
+  const [currentReadingBook, setCurrentReadingBook] = useState<Book | null>(
+    null
+  );
   const params = useLocalSearchParams();
 
   const loadBooks = () => {
@@ -74,9 +81,16 @@ export default function LibraryScreen() {
   };
 
   const handleBookPress = (book: Book) => {
-    setSelectedBook(book);
-    setNewPagesRead(book.pagesRead.toString());
-    setProgressModalVisible(true);
+    if (book.pdfPath) {
+      // Open PDF reader
+      setCurrentReadingBook(book);
+      setPdfReaderVisible(true);
+    } else {
+      // Show progress update modal for books without PDF
+      setSelectedBook(book);
+      setNewPagesRead(book.pagesRead.toString());
+      setProgressModalVisible(true);
+    }
   };
 
   const showValidationError = (message: string) => {
@@ -135,6 +149,7 @@ export default function LibraryScreen() {
       totalPages: book.totalPages.toString(),
       status: book.status,
       cover: book.cover,
+      pdfPath: book.pdfPath || "",
     });
     setEditModalVisible(true);
   };
@@ -202,7 +217,8 @@ export default function LibraryScreen() {
         newTitle,
         newTotalPages,
         newStatus,
-        newCover
+        newCover,
+        editForm.pdfPath
       );
 
       // Also update the pages read if it changed
@@ -217,6 +233,7 @@ export default function LibraryScreen() {
         totalPages: "",
         status: "to-read",
         cover: "",
+        pdfPath: "",
       });
       setPagesWarningModalVisible(false);
       setPendingEditData(null);
@@ -243,6 +260,7 @@ export default function LibraryScreen() {
       totalPages: "",
       status: "to-read",
       cover: "",
+      pdfPath: "",
     });
     setDeleteModalVisible(true);
   };
@@ -272,6 +290,22 @@ export default function LibraryScreen() {
     } catch (error) {
       console.error("Error picking image:", error);
       Alert.alert("Error", "Failed to pick image. Please try again.");
+    }
+  };
+
+  const pickEditPdfFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf",
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setEditForm((prev) => ({ ...prev, pdfPath: result.assets[0].uri }));
+      }
+    } catch (error) {
+      console.error("Error picking PDF:", error);
+      Alert.alert("Error", "Failed to pick PDF file. Please try again.");
     }
   };
 
@@ -325,6 +359,77 @@ export default function LibraryScreen() {
       )}
     </View>
   );
+
+  const handlePageChange = (currentPage: number, totalPages: number) => {
+    if (!currentReadingBook) return;
+
+    try {
+      let newStatus = currentReadingBook.status;
+      if (currentPage === 0) {
+        newStatus = "to-read";
+      } else if (currentPage === totalPages) {
+        newStatus = "completed";
+      } else {
+        newStatus = "reading";
+      }
+
+      // Update progress in database
+      database.updateBookProgress(
+        currentReadingBook.id!,
+        currentPage,
+        newStatus
+      );
+
+      // Update the local book state
+      setCurrentReadingBook((prev) =>
+        prev
+          ? {
+              ...prev,
+              pagesRead: currentPage,
+              status: newStatus,
+            }
+          : null
+      );
+
+      // Refresh the books list
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error updating progress:", error);
+      Alert.alert("Error", "Failed to update progress");
+    }
+  };
+
+  const handleUpdateTotalPages = (bookId: number, totalPages: number) => {
+    try {
+      // Update the book's total pages in the database
+      const book = books.find((b) => b.id === bookId);
+      if (book) {
+        database.updateBookDetails(
+          bookId,
+          book.title,
+          totalPages,
+          book.status,
+          book.cover,
+          book.pdfPath
+        );
+
+        // Refresh the books list
+        setRefreshTrigger((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Error updating total pages:", error);
+    }
+  };
+
+  const handlePdfReaderClose = () => {
+    // Save the current reading position before closing
+    if (currentReadingBook) {
+      // The position is already saved in handlePageChange
+      console.log("Closing PDF reader, current position saved");
+    }
+    setPdfReaderVisible(false);
+    setCurrentReadingBook(null);
+  };
 
   return (
     <>
@@ -480,6 +585,34 @@ export default function LibraryScreen() {
             </View>
 
             <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>إضافة PDF:</Text>
+              <TouchableOpacity
+                style={styles.imagePickerButton}
+                onPress={pickEditPdfFile}
+              >
+                {editForm.pdfPath ? (
+                  <View style={styles.selectedImage}>
+                    <Ionicons name="document" size={32} color="#666666" />
+                    <Text style={styles.imagePlaceholderText}>
+                      تم اختيار PDF: {editForm.pdfPath.split("/").pop()}
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Ionicons
+                      name="document-outline"
+                      size={32}
+                      color="#666666"
+                    />
+                    <Text style={styles.imagePlaceholderText}>
+                      اختر ملف PDF
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>عنوان الكتاب:</Text>
               <TextInput
                 style={styles.modalTextInput}
@@ -523,6 +656,7 @@ export default function LibraryScreen() {
                     totalPages: "",
                     status: "to-read",
                     cover: "",
+                    pdfPath: "",
                   });
                 }}
               >
@@ -581,6 +715,23 @@ export default function LibraryScreen() {
         type="danger"
         icon="warning-outline"
       />
+
+      {/* PDF Reader Modal */}
+      <Modal
+        visible={pdfReaderVisible}
+        animationType="slide"
+        onRequestClose={handlePdfReaderClose}
+        statusBarTranslucent={true}
+      >
+        {currentReadingBook && (
+          <PdfReader
+            book={currentReadingBook}
+            onPageChange={handlePageChange}
+            onClose={handlePdfReaderClose}
+            onUpdateTotalPages={handleUpdateTotalPages}
+          />
+        )}
+      </Modal>
     </>
   );
 }

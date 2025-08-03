@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Book } from "../lib/database";
@@ -40,6 +41,15 @@ export default function BookCard({
         {book.status === "completed" && (
           <View style={styles.completedBadge}>
             <Text style={styles.completedText}>✓</Text>
+          </View>
+        )}
+        {book.pdfPath && (
+          <View style={styles.pdfBadge}>
+            <Ionicons
+              name="document"
+              size={16}
+              color={colors.background.primary}
+            />
           </View>
         )}
       </View>
@@ -103,6 +113,17 @@ const styles = StyleSheet.create({
     color: colors.background.primary,
     fontSize: 16,
     fontWeight: "bold",
+  },
+  pdfBadge: {
+    position: "absolute",
+    top: designTokens.spacing.sm,
+    right: designTokens.spacing.sm,
+    backgroundColor: colors.primary,
+    borderRadius: designTokens.borderRadius.full,
+    width: 32,
+    height: 32,
+    justifyContent: "center",
+    alignItems: "center",
   },
   infoContainer: {
     flex: 1,

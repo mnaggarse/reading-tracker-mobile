@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
+import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   KeyboardAvoidingView,
@@ -16,13 +18,16 @@ import {
 } from "react-native";
 import ConfirmModal from "../components/ConfirmModal";
 import { database } from "../lib/database";
+import { getPdfInfo } from "../lib/pdfUtils";
 import { colors, designTokens, textStyles } from "../lib/styles";
 
 export default function AddBookScreen() {
   const [title, setTitle] = useState("");
   const [cover, setCover] = useState("");
+  const [pdfPath, setPdfPath] = useState("");
   const [totalPages, setTotalPages] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDetectingPages, setIsDetectingPages] = useState(false);
   const [validationModalVisible, setValidationModalVisible] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
   const [validationType, setValidationType] = useState<"warning" | "info">(
@@ -57,6 +62,42 @@ export default function AddBookScreen() {
     }
   };
 
+  const pickPdfFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf",
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setPdfPath(result.assets[0].uri);
+
+        // Automatically detect pages
+        setIsDetectingPages(true);
+        try {
+          console.log("Detecting pages for PDF:", result.assets[0].uri);
+          const pdfInfo = await getPdfInfo(result.assets[0].uri);
+          console.log("PDF info detected:", pdfInfo);
+          if (pdfInfo && pdfInfo.pageCount > 0) {
+            setTotalPages(pdfInfo.pageCount.toString());
+            console.log("Set total pages to:", pdfInfo.pageCount);
+          } else {
+            console.log("No valid page count detected, setting default");
+            setTotalPages("1"); // Default to 1 page
+          }
+        } catch (error) {
+          console.error("Error detecting PDF pages:", error);
+          setTotalPages("1"); // Default to 1 page on error
+        } finally {
+          setIsDetectingPages(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error picking PDF:", error);
+      Alert.alert("Error", "Failed to pick PDF file. Please try again.");
+    }
+  };
+
   const showValidationError = (
     message: string,
     type: "warning" | "info" = "warning"
@@ -72,19 +113,26 @@ export default function AddBookScreen() {
       return;
     }
 
+    if (!cover.trim()) {
+      showValidationError("يرجى اختيار صورة غلاف لكتابك.");
+      return;
+    }
+
+    if (!pdfPath.trim()) {
+      showValidationError("يرجى اختيار ملف PDF للكتاب.");
+      return;
+    }
+
+    // Only validate pages if no PDF is selected or if pages input is visible
     if (
-      !totalPages.trim() ||
-      isNaN(Number(totalPages)) ||
-      Number(totalPages) <= 0
+      !pdfPath.trim() &&
+      (!totalPages.trim() ||
+        isNaN(Number(totalPages)) ||
+        Number(totalPages) <= 0)
     ) {
       showValidationError(
         "يرجى إدخال عدد صحيح من الصفحات (يجب أن يكون أكبر من 0)."
       );
-      return;
-    }
-
-    if (!cover.trim()) {
-      showValidationError("يرجى اختيار صورة غلاف لكتابك.");
       return;
     }
 
@@ -94,14 +142,17 @@ export default function AddBookScreen() {
       database.addBook({
         title: title.trim(),
         cover: cover.trim(),
-        totalPages: Number(totalPages),
+        pdfPath: pdfPath.trim(),
+        totalPages: Number(totalPages) || 1, // Default to 1 if not set
         pagesRead: 0,
         status: "to-read",
       });
 
       setTitle("");
       setCover("");
+      setPdfPath("");
       setTotalPages("");
+      setIsDetectingPages(false);
 
       router.push({
         pathname: "/",
@@ -148,6 +199,28 @@ export default function AddBookScreen() {
             </TouchableOpacity>
           </View>
 
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>ملف PDF</Text>
+            <TouchableOpacity
+              style={styles.pdfPickerButton}
+              onPress={pickPdfFile}
+            >
+              {pdfPath ? (
+                <View style={styles.pdfSelected}>
+                  <Ionicons name="document" size={32} color={colors.primary} />
+                  <Text style={styles.pdfSelectedText}>تم اختيار ملف PDF</Text>
+                </View>
+              ) : (
+                <View style={styles.pdfPlaceholder}>
+                  <Ionicons name="document-outline" size={32} color="#666666" />
+                  <Text style={styles.pdfPlaceholderText}>
+                    اختر ملف PDF للكتاب
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>عنوان الكتاب</Text>
@@ -162,14 +235,38 @@ export default function AddBookScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>إجمالي الصفحات</Text>
-              <TextInput
-                style={styles.input}
-                value={totalPages}
-                onChangeText={setTotalPages}
-                placeholder="أدخل إجمالي عدد الصفحات"
-                placeholderTextColor="#999999"
-                keyboardType="numeric"
-              />
+              {pdfPath ? (
+                <View style={styles.detectedPagesContainer}>
+                  {isDetectingPages ? (
+                    <View style={styles.detectingContainer}>
+                      <ActivityIndicator size="small" color={colors.primary} />
+                      <Text style={styles.detectingText}>
+                        جاري اكتشاف الصفحات...
+                      </Text>
+                    </View>
+                  ) : (
+                    <View style={styles.detectedPagesInfo}>
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color={colors.success}
+                      />
+                      <Text style={styles.detectedPagesText}>
+                        تم اكتشاف {totalPages} صفحة تلقائياً
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <TextInput
+                  style={styles.input}
+                  value={totalPages}
+                  onChangeText={setTotalPages}
+                  placeholder="أدخل إجمالي عدد الصفحات"
+                  placeholderTextColor="#999999"
+                  keyboardType="numeric"
+                />
+              )}
             </View>
 
             <TouchableOpacity
@@ -262,6 +359,64 @@ const styles = StyleSheet.create({
     ...textStyles.regularLg,
     color: colors.text.secondary,
     marginTop: designTokens.spacing.base,
+  },
+  pdfPickerButton: {
+    backgroundColor: colors.background.primary,
+    borderRadius: designTokens.borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: "hidden",
+  },
+  pdfSelected: {
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background.secondary,
+  },
+  pdfSelectedText: {
+    ...textStyles.regularBase,
+    color: colors.primary,
+    marginTop: designTokens.spacing.sm,
+  },
+  pdfPlaceholder: {
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background.primary,
+  },
+  pdfPlaceholderText: {
+    ...textStyles.regularLg,
+    color: colors.text.secondary,
+    marginTop: designTokens.spacing.base,
+  },
+  detectedPagesContainer: {
+    backgroundColor: colors.background.primary,
+    borderRadius: designTokens.borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: designTokens.spacing.base,
+    marginTop: designTokens.spacing.base,
+  },
+  detectingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: designTokens.spacing.sm,
+  },
+  detectingText: {
+    ...textStyles.regularBase,
+    color: colors.text.secondary,
+    marginLeft: designTokens.spacing.sm,
+  },
+  detectedPagesInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: designTokens.spacing.sm,
+  },
+  detectedPagesText: {
+    ...textStyles.regularBase,
+    color: colors.text.secondary,
+    marginLeft: designTokens.spacing.sm,
   },
   submitButton: {
     backgroundColor: colors.primary,
