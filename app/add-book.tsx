@@ -4,7 +4,6 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Image,
   KeyboardAvoidingView,
@@ -18,7 +17,6 @@ import {
 } from "react-native";
 import ConfirmModal from "../components/ConfirmModal";
 import { database } from "../lib/database";
-import { getPdfInfo } from "../lib/pdfUtils";
 import { colors, designTokens, textStyles } from "../lib/styles";
 
 export default function AddBookScreen() {
@@ -27,7 +25,6 @@ export default function AddBookScreen() {
   const [pdfPath, setPdfPath] = useState("");
   const [totalPages, setTotalPages] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDetectingPages, setIsDetectingPages] = useState(false);
   const [validationModalVisible, setValidationModalVisible] = useState(false);
   const [validationMessage, setValidationMessage] = useState("");
   const [validationType, setValidationType] = useState<"warning" | "info">(
@@ -71,26 +68,6 @@ export default function AddBookScreen() {
 
       if (!result.canceled && result.assets[0]) {
         setPdfPath(result.assets[0].uri);
-
-        // Automatically detect pages
-        setIsDetectingPages(true);
-        try {
-          console.log("Detecting pages for PDF:", result.assets[0].uri);
-          const pdfInfo = await getPdfInfo(result.assets[0].uri);
-          console.log("PDF info detected:", pdfInfo);
-          if (pdfInfo && pdfInfo.pageCount > 0) {
-            setTotalPages(pdfInfo.pageCount.toString());
-            console.log("Set total pages to:", pdfInfo.pageCount);
-          } else {
-            console.log("No valid page count detected, setting default");
-            setTotalPages("1"); // Default to 1 page
-          }
-        } catch (error) {
-          console.error("Error detecting PDF pages:", error);
-          setTotalPages("1"); // Default to 1 page on error
-        } finally {
-          setIsDetectingPages(false);
-        }
       }
     } catch (error) {
       console.error("Error picking PDF:", error);
@@ -123,12 +100,10 @@ export default function AddBookScreen() {
       return;
     }
 
-    // Only validate pages if no PDF is selected or if pages input is visible
     if (
-      !pdfPath.trim() &&
-      (!totalPages.trim() ||
-        isNaN(Number(totalPages)) ||
-        Number(totalPages) <= 0)
+      !totalPages.trim() ||
+      isNaN(Number(totalPages)) ||
+      Number(totalPages) <= 0
     ) {
       showValidationError(
         "يرجى إدخال عدد صحيح من الصفحات (يجب أن يكون أكبر من 0)."
@@ -143,7 +118,7 @@ export default function AddBookScreen() {
         title: title.trim(),
         cover: cover.trim(),
         pdfPath: pdfPath.trim(),
-        totalPages: Number(totalPages) || 1, // Default to 1 if not set
+        totalPages: Number(totalPages),
         pagesRead: 0,
         status: "to-read",
       });
@@ -152,7 +127,6 @@ export default function AddBookScreen() {
       setCover("");
       setPdfPath("");
       setTotalPages("");
-      setIsDetectingPages(false);
 
       router.push({
         pathname: "/",
@@ -235,38 +209,14 @@ export default function AddBookScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>إجمالي الصفحات</Text>
-              {pdfPath ? (
-                <View style={styles.detectedPagesContainer}>
-                  {isDetectingPages ? (
-                    <View style={styles.detectingContainer}>
-                      <ActivityIndicator size="small" color={colors.primary} />
-                      <Text style={styles.detectingText}>
-                        جاري اكتشاف الصفحات...
-                      </Text>
-                    </View>
-                  ) : (
-                    <View style={styles.detectedPagesInfo}>
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={20}
-                        color={colors.success}
-                      />
-                      <Text style={styles.detectedPagesText}>
-                        تم اكتشاف {totalPages} صفحة تلقائياً
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              ) : (
-                <TextInput
-                  style={styles.input}
-                  value={totalPages}
-                  onChangeText={setTotalPages}
-                  placeholder="أدخل إجمالي عدد الصفحات"
-                  placeholderTextColor="#999999"
-                  keyboardType="numeric"
-                />
-              )}
+              <TextInput
+                style={styles.input}
+                value={totalPages}
+                onChangeText={setTotalPages}
+                placeholder="أدخل إجمالي عدد الصفحات"
+                placeholderTextColor="#999999"
+                keyboardType="numeric"
+              />
             </View>
 
             <TouchableOpacity
@@ -388,35 +338,6 @@ const styles = StyleSheet.create({
     ...textStyles.regularLg,
     color: colors.text.secondary,
     marginTop: designTokens.spacing.base,
-  },
-  detectedPagesContainer: {
-    backgroundColor: colors.background.primary,
-    borderRadius: designTokens.borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: designTokens.spacing.base,
-    marginTop: designTokens.spacing.base,
-  },
-  detectingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: designTokens.spacing.sm,
-  },
-  detectingText: {
-    ...textStyles.regularBase,
-    color: colors.text.secondary,
-    marginLeft: designTokens.spacing.sm,
-  },
-  detectedPagesInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: designTokens.spacing.sm,
-  },
-  detectedPagesText: {
-    ...textStyles.regularBase,
-    color: colors.text.secondary,
-    marginLeft: designTokens.spacing.sm,
   },
   submitButton: {
     backgroundColor: colors.primary,

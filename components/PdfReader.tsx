@@ -114,8 +114,12 @@ export default function PdfReader({
               console.log(`Link pressed: ${uri}`);
             }}
             style={styles.pdf}
-            enablePaging={true}
+            enablePaging={false}
             horizontal={false}
+            enableAnnotationRendering={false}
+            enableAntialiasing={true}
+            spacing={0}
+            fitPolicy={0}
           />
         )}
       </View>
